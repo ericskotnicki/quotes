@@ -1,3 +1,5 @@
+![Project Icon](quote/static/quote/favicon.ico)
+
 # Quotes
 
 A dynamic web application that queries quotes and allows users to post their favorite quotes and commentary on the quote.
