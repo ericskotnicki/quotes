@@ -1,0 +1,88 @@
+{% extends "quote/layout.html" %} 
+{% block body %}
+
+    <h2>{{ author.name }}</h2>
+    <hr>
+
+    <div class="container">
+
+        <div class="author-container">
+            <div class="author-image">
+                {% if author.image %}
+                    <img src="{{ author.image.url }}" alt="Author image" style="width: 300px; height: 300px; border-radius: 2px; object-fit: cover;">
+                {% else %}
+                    <p>No author image uploaded.</p>
+                {% endif %}
+            </div>
+            <div class="author-bio">
+                <p>{{ author.bio }}</p>
+            </div>
+        </div>
+
+        <!-- Display all quotes -->
+        {% for quote in page_obj %}
+            <div class="row">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- User info -->
+                        <div class="d-flex align-items-center mb-3">
+                            <img class="rounded-circle" src="{{ quote.user.userprofile.profile_picture.url }}" alt="User Profile Picture" style="width: 40px; height: 40px; border-radius: 2px; object-fit: cover;">
+                            <div class="d-flex align-items-center ml-2">
+                                <p class="text-muted small mr-2">Posted by <a href="{% url 'profile' quote.user.id %}">/{{ quote.user.username }}</a></p>
+                                <p class="text-muted small">{{ quote.timestamp|timesince }} ago</p>
+                            </div>
+                        </div>
+
+                        <!-- Quote info -->
+                        <div class="media">
+                            <div class="media-body">
+                                <blockquote>
+                                    <p>"{{ quote.text }}"</p>
+                                    <!-- <footer>- {{ quote.author.name }}</footer> -->
+                                </blockquote>
+                                <p>Categories:  
+                                    {% for category in quote.categories.all %}
+                                        <a href="{% url 'category' category.name %}">{{ category.name }}</a>{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+        {% endfor %} 
+
+        <!-- Pagination (Bootstrap template) -->
+        {% if page_obj %}
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                        {% if page_obj.has_previous %}
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1" aria-disabled="true">Previous</a>
+                        {% else %}
+                            <span class="page-link">Previous</span>
+                        {% endif %}
+                    </li>
+                    <!-- Iterate over the range of page numbers that are needed based on the number of posts -->
+                    {% for page_num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == page_num %}
+                            <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                        <!-- Limit the number of page links that are displayed to only the current page and the two adjacent pages -->
+                        {% elif page_num > page_obj.number|add:'-3' and page_num < page_obj.number|add:'3' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                        {% if page_obj.has_next %}
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        {% else %}
+                            <span class="page-link">Next</span>
+                        {% endif %}
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+
+{% endblock %}

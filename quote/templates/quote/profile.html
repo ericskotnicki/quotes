@@ -1,0 +1,177 @@
+{% extends "quote/layout.html" %} 
+{% block body %}
+
+    <h2>{% if userprofile %} {{userprofile.username}}'s {% endif %}Profile</h2>
+    <hr>
+
+    <div class="container">
+
+        <!-- Update profile link --> 
+        {% if user == userprofile %}
+            <div class="update-profile-container">
+                <a class="update-profile-link" href="{% url 'update_profile' %}">Update Profile</a>
+            </div>
+            <br>
+        {% endif %}
+
+        <!-- Follow/Unfollow user -->
+        {% if user != userprofile %}
+            <div class="follow-container" id="follow-view">
+                <p id="follow-count">Followers: {{ userprofile.followers.count }}</p>
+                {% if userprofile in user.following.all %}
+                    <button class="unfollow-button" id="unfollow-button" data-id="{{ userprofile.id }}">Unfollow</button>
+                {% else %}
+                    <button class="follow-button" id="follow-button" data-id="{{ userprofile.id }}">Follow</button>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <!-- User Profile Info -->
+        <div class="profile-info">
+            {% if userprofile.userprofile.profile_picture %}
+                <img src="{{ userprofile.userprofile.profile_picture.url }}" alt="Profile image" style="width: 150px; height: 150px; border-radius: 2px; object-fit: cover;">
+            {% else %}
+                <p>No profile picture.</p>
+            {% endif %}
+            <br>
+            {% if user == userprofile %}
+                <p>Username: <strong>{{ userprofile.username }}</strong></p>
+                <p>Email: <strong>{{ userprofile.email }}</strong></p>
+                <p>Date Joined: <strong>{{ userprofile.date_joined|date:"F d, Y" }}</strong></p>
+                <p>Country: <strong>{{ userprofile.userprofile.country_of_origin }}</strong></p>
+                <p>Birthday: <strong>{{ userprofile.userprofile.birthday }}</strong></p>
+                <p>Followers: <strong>{{ userprofile.followers.count }}</strong></p>
+                <p>Following: <strong>{{ userprofile.following.count }}</strong></p>
+                <p>Quote Count: <strong>{{ quote_count }}</strong></p>
+                <p>Comment Count: <strong>{{ comment_count }}</strong></p>
+                <p>Like/Upvote Count: <strong>{{ like_count }}</strong></p>
+            {% endif %}
+        </div>
+        <hr>
+
+        <!-- Profile Links -->
+        <div class="profile-links">
+            <a class="" id="overview">Overview</a>
+            <a class="" id="posts">Posts</a>
+            <a class="" id="comments">Comments</a>
+            <a class="" id="saved">Saved</a>
+            <a class="" id="liked">Liked</a>
+            <a class="" id="history">History</a>
+        </div>
+
+        <!-- Profile Views - refer to JavaScript /quote/static//quote/profile.js -->
+        <!-- overview, posts, comments, saved, liked, history-->
+        <div class="profile-view" id="profile-view">
+
+            <!-- overview -->
+            <div id="overview-view">Overview</div>
+
+            <!-- comments -->
+            <div id="comments-view">Comments</div>
+
+            <!-- saved -->
+            <div id="saved-view">Saved</div>
+
+            <!-- liked -->
+            <div id="liked-view">Liked</div>
+
+            <!-- history -->
+            <div id="history-view">History</div>
+
+            <!-- posts -->
+            <div id="posts-view">
+                {% if page_obj %}
+                    {% for quote in page_obj %}
+                        <div class="row">
+                            <div class="card">
+                                <div class="card-body">
+                                    <!-- User info -->
+                                    <div class="d-flex align-items-center mb-3">
+                                        <!-- Profile Picture -->
+                                        {% if quote.user.userprofile.profile_picture %}
+                                            <img class="rounded-circle" src="{{ quote.user.userprofile.profile_picture.url }}" alt="User Profile Picture" style="width: 40px; height: 40px;">
+                                        {% else %}
+                                            <img class="rounded-circle" src="#" alt="User Profile Picture" style="width: 40px; height: 40px;">
+                                        {% endif %}
+                                        <div class="d-flex align-items-center ml-2">
+                                            <p class="text-muted small mr-2">Posted by <a href="{% url 'profile' quote.user.id %}">/{{ quote.user.username }}</a></p>
+                                            <p class="text-muted small">{{ quote.timestamp|timesince }} ago</p>
+                                        </div>
+                                    </div>
+                                    <!-- Quote info -->
+                                    <div class="media">
+                                        {% if quote.author.image %} 
+                                            <img class="mr-3" src="{{ quote.author.image.url }}" alt="Author Image" style="width: 150px; height: 150px; border-radius: 2px; object-fit: cover;">
+                                        {% else %}
+                                            <p>No image available</p>
+                                        {% endif %}
+                                        <div class="media-body">
+                                            <blockquote>
+                                                <p>"{{ quote.text }}"</p>
+                                                <a href="{% url 'author' quote.author.id %}"><footer>- {{ quote.author.name }}</footer></a>
+                                            </blockquote>
+                                            <br>
+                                            <p style="font-size: 0.9em;">Categories:  
+                                                {% for category in quote.categories.all|dictsort:"name" %}
+                                                    <a href="{% url 'category' category.name %}">{{ category.name }}</a>{% if not forloop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Like Button - Heart emoji (JS Event Listener controls this div) -->
+                                    {% if userprofile.is_authenticated %}
+                                        <button style="text-decoration: none;" class="btn btn-link like-btn" id="like-btn-{{quote.id}}" data-post-id="{{quote.id}}">
+                                            <i id="like-icon-{{quote.id}}" class="like-icon fa {% if user in quote.likes.all %}fa-heart{% else %}fa-heart-o{% endif %}" data-user-liked="{% if user in quote.likes.all %}True{% else %}False{% endif %}"></i>
+                                            <span id="like-count-{{quote.id}}" class="like-count">{{ quote.likes.count }}</span>
+                                        </button>
+                                    {% endif %}
+
+                                    <!-- Edit Button -->
+                                    {% if userprofile.is_authenticated and userprofile == quote.user %}
+                                        <a href="#" id="edit-link" data-post-id="{{post.id}}">Edit</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                    {% endfor %} 
+
+                        <!-- Pagination (Bootstrap template) -->
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                                    {% if page_obj.has_previous %}
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1" aria-disabled="true">Previous</a>
+                                    {% else %}
+                                        <span class="page-link">Previous</span>
+                                    {% endif %}
+                                </li>
+                                {% for page_num in page_obj.paginator.page_range %}
+                                    {% if page_obj.number == page_num %}
+                                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                                    {% elif page_num > page_obj.number|add:'-3' and page_num < page_obj.number|add:'3' %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+                                <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                                    {% if page_obj.has_next %}
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                                    {% else %}
+                                        <span class="page-link">Next</span>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                    
+                {% else %}
+                    <p>No posts.</p>
+                {% endif %}
+            </div>
+            <!-- End posts view -->
+
+        </div>
+    </div>
+
+{% endblock %}

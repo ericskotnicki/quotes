@@ -1,0 +1,103 @@
+{% extends "quote/layout.html" %}
+
+{% block body %}
+
+    <h2>Quote Board</h2>
+    <hr>
+
+    <div class="container">
+    <!-- <div class="container d-flex justify-content-between align-items-center"> -->
+
+        <!-- Create a New Post -->
+        {% if user.is_authenticated %}
+            <div class="create-post-container">
+                <a href="{% url 'post' %}" class="create-post-link">Create Post</a>
+            </div>
+            <br>
+        {% endif %}
+
+        <!-- Display all quotes -->
+        {% for quote in page_obj %}
+            <div class="row">
+                <div class="card">
+                    <div class="card-body">
+                        <!-- User info -->
+                        <div class="d-flex align-items-center mb-3">
+                            <!-- Profile Picture -->
+                            {% if quote.user.userprofile.profile_picture %}
+                                <img class="rounded-circle" src="{{ quote.user.userprofile.profile_picture.url }}" alt="User Profile Picture" style="width: 40px; height: 40px;">
+                            {% else %}
+                                <img class="rounded-circle" src="#" alt="User Profile Picture" style="width: 40px; height: 40px;">
+                            {% endif %}
+                            <div class="d-flex align-items-center ml-2">
+                                <p class="text-muted small mr-2">Posted by <a href="{% url 'profile' quote.user.id %}">/{{ quote.user.username }}</a></p>
+                                <p class="text-muted small">{{ quote.timestamp|timesince }} ago</p>
+                            </div>
+                        </div>
+                        <!-- Quote info -->
+                        <div class="media">
+                            {% if quote.author.image %} 
+                                <img class="mr-3" src="{{ quote.author.image.url }}" alt="Author Image" style="width: 150px; height: 150px; border-radius: 2px; object-fit: cover;">
+                            {% else %}
+                                <p>No image available</p>
+                            {% endif %}
+                            <div class="media-body">
+                                <blockquote>
+                                    <p>"{{ quote.text }}"</p>
+                                    <a href="{% url 'author' quote.author.id %}"><footer>- {{ quote.author.name }}</footer></a>
+                                </blockquote>
+                                <br>
+                                <p style="font-size: 0.9em;">Categories:  
+                                    {% for category in quote.categories.all|dictsort:"name" %}
+                                        <a href="{% url 'category' category.name %}">{{ category.name }}</a>{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Like Button - Heart emoji (JS Event Listener controls this div) -->
+                        {% if user.is_authenticated %}
+                            <button style="text-decoration: none;" class="btn btn-link like-btn" id="like-btn-{{quote.id}}" data-post-id="{{quote.id}}">
+                                <i id="like-icon-{{quote.id}}" class="like-icon fa {% if user in quote.likes.all %}fa-heart{% else %}fa-heart-o{% endif %}" data-user-liked="{% if user in quote.likes.all %}True{% else %}False{% endif %}"></i>
+                                <span id="like-count-{{quote.id}}" class="like-count">{{ quote.likes.count }}</span>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <hr>
+        {% endfor %} 
+
+        <!-- Pagination (Bootstrap template) -->
+        {% if page_obj %}
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                        {% if page_obj.has_previous %}
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1" aria-disabled="true">Previous</a>
+                        {% else %}
+                            <span class="page-link">Previous</span>
+                        {% endif %}
+                    </li>
+                    <!-- Iterate over the range of page numbers that are needed based on the number of posts -->
+                    {% for page_num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == page_num %}
+                            <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                        <!-- Limit the number of page links that are displayed to only the current page and the two adjacent pages -->
+                        {% elif page_num > page_obj.number|add:'-3' and page_num < page_obj.number|add:'3' %}
+                            <li class="page-item"><a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                        {% if page_obj.has_next %}
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                        {% else %}
+                            <span class="page-link">Next</span>
+                        {% endif %}
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+
+{% endblock %}

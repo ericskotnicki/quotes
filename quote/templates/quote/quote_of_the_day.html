@@ -1,0 +1,52 @@
+{% extends "quote/layout.html" %} 
+{% block body %}
+
+    <h2>Quote of the Day</h2>
+    <hr>
+
+    <div class="container">
+        <!-- If a quote is liked more than 5 times in one day, it becomes the quote of the day; otherwise, a random quote is chosen. -->
+        <!-- Display quote of the day -->
+        <div class="row">
+            <div class="card">
+                <div class="card-body">
+                    <!-- User info -->
+                    <div class="d-flex align-items-center mb-3">
+                        <!-- Profile Picture -->
+                        {% if quote_of_the_day.user.userprofile.profile_picture %}
+                            <img class="rounded-circle" src="{{ quote_of_the_day.user.userprofile.profile_picture.url }}" alt="User Profile Picture" style="width: 40px; height: 40px;">
+                        {% else %}
+                            <img class="rounded-circle" src="#" alt="User Profile Picture" style="width: 40px; height: 40px;">
+                        {% endif %}
+                        <div class="d-flex align-items-center ml-2">
+                            <p class="text-muted small mr-2">Posted by <a href="{% url 'profile' quote_of_the_day.user.id %}">/{{ quote_of_the_day.user.username }}</a></p>
+                            <p class="text-muted small">{{ quote_of_the_day.timestamp|timesince }} ago</p>
+                        </div>
+                    </div>
+
+                    <!-- Quote info -->
+                    <div class="media">
+                        <img class="mr-3" src="{{ quote_of_the_day.author.image.url }}" alt="Author Image" style="width: 150px; height: 150px; border-radius: 2px; object-fit: cover;">
+                        <div class="media-body">
+                            <blockquote>
+                                <p>"{{ quote_of_the_day.text }}"</p>
+                                <a href="{% url 'author' quote_of_the_day.author.id %}"><footer>- {{ quote_of_the_day.author.name }}</footer></a>
+                            </blockquote>
+                            <br>
+                            <p style="font-size: 0.9em;">Categories:  
+                                {% for category in quote_of_the_day.categories.all|dictsort:"name" %}
+                                    <a href="{% url 'category' category.name %}">{{ category.name }}</a>{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+
+        <!-- Display all previous quotes of the day -->
+        
+    </div>
+
+{% endblock %}

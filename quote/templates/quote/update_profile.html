@@ -1,0 +1,98 @@
+{% extends "quote/layout.html" %}
+
+{% block body %}
+
+    <h2>Update Profile</h2>
+
+    <div class="container">
+        <form action="{% url 'update_profile' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Username -->
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">@username</span>
+                </div>
+                <input type="text" aria-label="Username" class="form-control" name="username" placeholder="{{ request.user }}">
+            </div>
+            <br>
+            <!-- Email Address -->
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Email Address</span>
+                </div>
+                <input type="text" aria-label="Email" class="form-control" name="email" placeholder="{{ request.user.email }}">
+            </div>
+            <br>
+            <!-- Birthday -->
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Birthday</span>
+                </div>
+                <input type="date" aria-label="Birthday" class="form-control" name="birthday" value="{% if request.user.userprofile.birthday %}{{ request.user.userprofile.birthday|date:'Y-m-d' }}{% endif %}">
+            </div>
+            <br>
+            <!-- Country of Origin -->
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Country of Origin</span>
+                </div>
+                <select class="form-control" name="country_of_origin">
+                    <option value="" disabled {% if not request.user.userprofile.country_of_origin %}selected{% endif %} class="light-gray">
+                        Select a country
+                    </option>
+                    {% for country in countries %}
+                        <option class="light-gray" value="{{ country }}" {% if country == request.user.userprofile.country_of_origin %}selected {% endif %}>
+                            {{ country }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <br>
+            <!-- Profile Picture Upload -->
+            <div class="input-group mb-4">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroupFileAddon01">Upload Profile Picture</span>
+                </div>
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="inputGroupFile01" name="profile_picture" aria-describedby="inputGroupFileAddon01" onchange="updateLabel()">
+                    <label class="custom-file-label" for="inputGroupFile01" placeholder="Choose File">Choose File</label>
+                </div>
+            </div>
+            <!-- Preview Image display -->
+            <img id="imagePreview" src="#" alt="Image Preview" style="display: none; width: 200px; height: 200px; border-radius: 2px; object-fit: cover;">
+            <br>
+            <!-- Change Password Form -->
+            <h5>Change Password</h5>
+            <div class="form-group">
+                <input class="form-control" type="password" name="password" placeholder="Password">
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
+            </div>
+            <br>
+            <!-- Submit Post -->
+            <input class="btn btn-primary" type="submit" value="Update">
+        </form>
+    </div>
+
+    <script>
+        function updateLabel() {
+            var inputFile = document.getElementById('inputGroupFile01');
+            var chosenFile = inputFile.files[0].name;
+            var fileLabel = document.querySelector("label[for='inputGroupFile01']");
+            fileLabel.innerHTML = chosenFile;
+
+            // Image preview
+            var imagePreview = document.getElementById('imagePreview');
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+            }
+
+            reader.readAsDataURL(inputFile.files[0]);
+        }
+    </script>
+
+{% endblock %}
