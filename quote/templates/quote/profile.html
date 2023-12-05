@@ -14,17 +14,7 @@
             <br>
         {% endif %}
 
-        <!-- Follow/Unfollow user -->
-        {% if user != userprofile %}
-            <div class="follow-container" id="follow-view">
-                <p id="follow-count">Followers: {{ userprofile.followers.count }}</p>
-                {% if userprofile in user.following.all %}
-                    <button class="unfollow-button" id="unfollow-button" data-id="{{ userprofile.id }}">Unfollow</button>
-                {% else %}
-                    <button class="follow-button" id="follow-button" data-id="{{ userprofile.id }}">Follow</button>
-                {% endif %}
-            </div>
-        {% endif %}
+
 
         <!-- User Profile Info -->
         <div class="profile-info">
@@ -34,29 +24,46 @@
                 <p>No profile picture.</p>
             {% endif %}
             <br>
+            <!-- Follow/Unfollow user -->
+            {% if user != userprofile %}
+                <div class="d-flex align-items-center">
+                    <div class="follow-container" style="display: flex; flex-direction: column; align-items: center;">
+                        {% if is_following %}
+                            <button class="unfollow-button" id="unfollow-button" data-id="{{ userprofile.id }}">Unfollow</button>
+                        {% else %}
+                            <button class="follow-button" id="follow-button" data-id="{{ userprofile.id }}">Follow</button>
+                        {% endif %}
+                        <p class="follow-count" id="follow-count" style="font-size: 0.8rem; margin-top: 10px;">Followers: {{ userprofile.followers.count }}</p>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- User info -->
             {% if user == userprofile %}
-                <p>Username: <strong>{{ userprofile.username }}</strong></p>
-                <p>Email: <strong>{{ userprofile.email }}</strong></p>
-                <p>Date Joined: <strong>{{ userprofile.date_joined|date:"F d, Y" }}</strong></p>
-                <p>Country: <strong>{{ userprofile.userprofile.country_of_origin }}</strong></p>
-                <p>Birthday: <strong>{{ userprofile.userprofile.birthday }}</strong></p>
-                <p>Followers: <strong>{{ userprofile.followers.count }}</strong></p>
-                <p>Following: <strong>{{ userprofile.following.count }}</strong></p>
-                <p>Quote Count: <strong>{{ quote_count }}</strong></p>
-                <p>Comment Count: <strong>{{ comment_count }}</strong></p>
-                <p>Like/Upvote Count: <strong>{{ like_count }}</strong></p>
+                <table class="user-info-table">
+                    <tr><td><strong>Username:</strong></td><td style="padding-left: 20px;">{{ userprofile.username }}</td></tr>
+                    <tr><td><strong>Email:</strong></td><td style="padding-left: 20px;">{{ userprofile.email }}</td></tr>
+                    <tr><td><strong>Date Joined:</strong></td><td style="padding-left: 20px;">{{ userprofile.date_joined|date:"F d, Y" }}</td></tr>
+                    <tr><td><strong>Country:</strong></td><td style="padding-left: 20px;">{{ userprofile.userprofile.country_of_origin }}</td></tr>
+                    <tr><td><strong>Birthday:</strong></td><td style="padding-left: 20px;">{{ userprofile.userprofile.birthday }}</td></tr>
+                    <tr><td><strong>Followers:</strong></td><td style="padding-left: 20px;">{{ userprofile.followers.count }}</td></tr>
+                    <tr><td><strong>Following:</strong></td><td style="padding-left: 20px;">{{ userprofile.following.count }}</td></tr>
+                    <tr><td><strong>Quotes:</strong></td><td style="padding-left: 20px;">{{ quote_count }}</td></tr>
+                    <tr><td><strong>Comments:</strong></td><td style="padding-left: 20px;">{{ comment_count }}</td></tr>
+                    <tr><td><strong>Likes:</strong></td><td style="padding-left: 20px;">{{ like_count }}</td></tr>
+                </table>
             {% endif %}
         </div>
         <hr>
 
         <!-- Profile Links -->
         <div class="profile-links">
-            <a class="" id="overview">Overview</a>
-            <a class="" id="posts">Posts</a>
-            <a class="" id="comments">Comments</a>
-            <a class="" id="saved">Saved</a>
-            <a class="" id="liked">Liked</a>
-            <a class="" id="history">History</a>
+            <a href="#" class="overview-link" id="overview-link">Overview</a>
+            <a href="#" class="posts-link" id="posts-link">Posts</a>
+            <a href="#" class="comments-link"  id="comments-link">Comments</a>
+            <a href="#" class="saved-link"  id="saved-link">Saved</a>
+            <a href="#" class="liked-link"  id="liked-link">Liked</a>
+            <a href="#" class="history-link"  id="history-link">History</a>
         </div>
 
         <!-- Profile Views - refer to JavaScript /quote/static//quote/profile.js -->

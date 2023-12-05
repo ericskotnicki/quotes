@@ -22,7 +22,7 @@
                 <div class="card">
                     <div class="card-body">
                         <!-- User info -->
-                        <div class="d-flex align-items-center mb-3">
+                        <div class="d-flex align-items-center mb-3 position-relative">
                             <!-- Profile Picture -->
                             {% if quote.user.userprofile.profile_picture %}
                                 <img class="rounded-circle" src="{{ quote.user.userprofile.profile_picture.url }}" alt="User Profile Picture" style="width: 40px; height: 40px;">
@@ -33,6 +33,17 @@
                                 <p class="text-muted small mr-2">Posted by <a href="{% url 'profile' quote.user.id %}">/{{ quote.user.username }}</a></p>
                                 <p class="text-muted small">{{ quote.timestamp|timesince }} ago</p>
                             </div>
+                            <!-- Follow/Unfollow user -->
+                            {% if user != quote.user %}
+                                <div class="d-flex align-items-center position-absolute" style="right:0;">
+                                    <p class="follow-count" id="follow-count" style="font-size: 0.8rem; margin-right: 10px; margin-top: 20px;">Followers: {{ quote.user.followers.count }}</p>
+                                    {% if quote.user.id in following_users %}
+                                        <button class="unfollow-button" id="unfollow-button" data-id="{{ quote.user.id }}">Unfollow</button>
+                                    {% else %}
+                                        <button class="follow-button" id="follow-button" data-id="{{ quote.user.id }}">Follow</button>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                         </div>
                         <!-- Quote info -->
                         <div class="media">

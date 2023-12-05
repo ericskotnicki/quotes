@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.urls import reverse
 from django.contrib import messages
@@ -21,15 +22,22 @@ from .forms import SearchForm
 # Views
 
 def index(request):
-    # Get all posted quotes and paginate
+    # Get all posted quotes
     quotes = Quote.objects.all().order_by('-timestamp')
 
+    # Determine which users the current user is following
+    following_users = []
+    if request.user.is_authenticated:
+        following_users = Follow.objects.filter(follower=request.user).values_list('followed', flat=True)
+
+    # Paginate
     paginator = Paginator(quotes, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     return render(request, "quote/index.html", {
         'page_obj': page_obj,
+        'following_users': following_users,
     })
 
 
@@ -210,12 +218,18 @@ def profile(request, id):
     comment_count = Comment.objects.filter(user=userprofile).count()
     like_count = Like.objects.filter(user=userprofile).count()
 
+    # Determine if the current user is following the user whose profile is being viewed
+    is_following = False
+    if request.user.is_authenticated:
+        is_following = Follow.objects.filter(follower=request.user, followed=userprofile).exists()
+
     return render(request, "quote/profile.html", {
         'page_obj': page_obj,
         'userprofile': userprofile,
         'quote_count': quote_count,
         'comment_count': comment_count,
         'like_count': like_count,
+        'is_following': is_following,
     })
 
 
@@ -294,10 +308,15 @@ def quote_of_the_day(request):
         print(f'Quote liked more than 5 times: {quote_of_the_day}')
     else:
         quote_of_the_day = Quote.objects.order_by('?').first()
-        print(f'Random quote: {quote_of_the_day}')
+
+    # Determine if the current user is following the user who posted the quote of the day
+    is_following = False
+    if request.user.is_authenticated:
+        is_following = Follow.objects.filter(follower=request.user, followed=quote_of_the_day.user).exists()
 
     return render(request, "quote/quote_of_the_day.html", {
         'quote_of_the_day': quote_of_the_day,
+        'is_following': is_following,
     })
 
 
@@ -386,6 +405,55 @@ def following(request):
 @csrf_exempt
 @login_required
 def follow(request, id):
+    user_id = json.loads(request.body)['user_id']
+    user = User.objects.get(id=user_id)
+
+    # Check if logged in user has already followed the profile page user
+    if not Follow.objects.filter(follower=request.user, followed=user).exists():
+        Follow.objects.create(follower=request.user, followed=user)
+        user_followed = True
+    else:
+        user_followed = False
+
+    followers_count = Follow.objects.filter(followed=user).count()
+
+    # Create a JSON response to send back to the client
+    data = {
+        'followers': followers_count,
+        'user_followed': user_followed,
+    }
+
+    return JsonResponse(data)
+
+@csrf_exempt
+@login_required
+def unfollow(request, id):
+    user_id = json.loads(request.body)['user_id']
+    user = User.objects.get(id=user_id)
+
+    # Check if logged in user has already unfollowed the profile page user
+    try:
+        follow = Follow.objects.get(follower=request.user, followed=user)
+        follow.delete()
+        user_unfollowed = True
+    except ObjectDoesNotExist:
+        user_unfollowed = False
+
+    followers_count = Follow.objects.filter(followed=user).count()
+
+    # Create a JSON response to send back to the client
+    data = {
+        'followers': followers_count,
+        'user_unfollowed': user_unfollowed,
+    }
+
+    return JsonResponse(data)
+
+
+"""
+@csrf_exempt
+@login_required
+def follow(request, id):
     if request.method == 'POST':
         user = request.user    # user that is following
         followed = User.objects.get(id=id)   # user that is being followed
@@ -398,8 +466,10 @@ def follow(request, id):
     
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
+"""
 
 
+"""
 @csrf_exempt
 @login_required
 def unfollow(request, id):
@@ -415,6 +485,8 @@ def unfollow(request, id):
     
     else:
         return JsonResponse({"error": "POST request required."}, status=400)
+"""
+
     
 
 @csrf_exempt
