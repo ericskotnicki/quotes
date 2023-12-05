@@ -1,14 +1,17 @@
 # Ignore project notes
-quotes/project_notes.txt
+project_notes.txt
 
 # Ignore quotes text file
-quotes/quotes.txt
+quotes.txt
 
 # Ignore quotes CSV file
-quotes/quotes.csv
+quotes.csv
 
 # Ignore JSON files in quotes directory
-quotes/json
+quotes.json
 
 # Ignore second quotes CSV file
-quotes/Quotes2.csv
+Quotes2.csv
+
+# .vscode settings
+.vscode/settings.json
