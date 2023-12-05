@@ -21,8 +21,10 @@
             <div class="row">
                 <div class="card">
                     <div class="card-body">
+
                         <!-- User info -->
                         <div class="d-flex align-items-center mb-3 position-relative">
+
                             <!-- Profile Picture -->
                             {% if quote.user.userprofile.profile_picture %}
                                 <img class="rounded-circle" src="{{ quote.user.userprofile.profile_picture.url }}" alt="User Profile Picture" style="width: 40px; height: 40px;">
@@ -33,18 +35,20 @@
                                 <p class="text-muted small mr-2">Posted by <a href="{% url 'profile' quote.user.id %}">/{{ quote.user.username }}</a></p>
                                 <p class="text-muted small">{{ quote.timestamp|timesince }} ago</p>
                             </div>
-                            <!-- Follow/Unfollow user -->
-                            {% if user != quote.user %}
+
+                            <!-- Follow/Unfollow user (AJAX)-->
+                            {% if user != quote.user and user.is_authenticated %}
                                 <div class="d-flex align-items-center position-absolute" style="right:0;">
-                                    <p class="follow-count" id="follow-count" style="font-size: 0.8rem; margin-right: 10px; margin-top: 20px;">Followers: {{ quote.user.followers.count }}</p>
+                                    <p class="follow-count" id="follow-count-{{ quote.user.id }}" style="font-size: 0.8rem; margin-right: 10px; margin-top: 20px;">Followers: {{ quote.user.followers.count }}</p>
                                     {% if quote.user.id in following_users %}
-                                        <button class="unfollow-button" id="unfollow-button" data-id="{{ quote.user.id }}">Unfollow</button>
+                                        <button class="unfollow-button" id="unfollow-button-{{ quote.user.id }}" data-id="{{ quote.user.id }}">Unfollow</button>
                                     {% else %}
-                                        <button class="follow-button" id="follow-button" data-id="{{ quote.user.id }}">Follow</button>
+                                        <button class="follow-button" id="follow-button-{{ quote.user.id }}" data-id="{{ quote.user.id }}">Follow</button>
                                     {% endif %}
                                 </div>
                             {% endif %}
                         </div>
+
                         <!-- Quote info -->
                         <div class="media">
                             {% if quote.author.image %} 
@@ -66,10 +70,10 @@
                             </div>
                         </div>
 
-                        <!-- Like Button - Heart emoji (JS Event Listener controls this div) -->
+                        <!-- Like Button Font Awesome 5 Heart (AJAX) -->
                         {% if user.is_authenticated %}
                             <button style="text-decoration: none;" class="btn btn-link like-btn" id="like-btn-{{quote.id}}" data-post-id="{{quote.id}}">
-                                <i id="like-icon-{{quote.id}}" class="like-icon fa {% if user in quote.likes.all %}fa-heart{% else %}fa-heart-o{% endif %}" data-user-liked="{% if user in quote.likes.all %}True{% else %}False{% endif %}"></i>
+                                <i id="like-icon-{{quote.id}}" class="like-icon {% if user in quote.likes.all %}fas fa-heart{% else %}far fa-heart{% endif %}" data-user-liked="{% if user in quote.likes.all %}True{% else %}False{% endif %}"></i>
                                 <span id="like-count-{{quote.id}}" class="like-count">{{ quote.likes.count }}</span>
                             </button>
                         {% endif %}

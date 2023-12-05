@@ -448,45 +448,6 @@ def unfollow(request, id):
     }
 
     return JsonResponse(data)
-
-
-"""
-@csrf_exempt
-@login_required
-def follow(request, id):
-    if request.method == 'POST':
-        user = request.user    # user that is following
-        followed = User.objects.get(id=id)   # user that is being followed
-
-        # Create a follow object and insert into database
-        follow = Follow(follower=user, followed=followed)
-        follow.save()
-
-        return JsonResponse({"message": f"You are now following {followed.username}!"}, status=201)
-    
-    else:
-        return JsonResponse({"error": "POST request required."}, status=400)
-"""
-
-
-"""
-@csrf_exempt
-@login_required
-def unfollow(request, id):
-    if request.method == 'POST':
-        user = request.user    # user that is unfollowing
-        unfollowed = User.objects.get(id=id)  # user that is being unfollowed
-
-        # Find the follow object and delete it from the database
-        unfollow = Follow.objects.get(follower=user, followed=unfollowed)
-        unfollow.delete()
-
-        return JsonResponse({"message": f"You have unfollowed {unfollowed.username}"}, status=201)
-    
-    else:
-        return JsonResponse({"error": "POST request required."}, status=400)
-"""
-
     
 
 @csrf_exempt

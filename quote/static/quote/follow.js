@@ -1,9 +1,10 @@
 // Description: JavaScript file for html templates containing the follow/unfollow button in the quote app folder
 
-
 /* Allows user to Follow/Unfollow other users */
 
+// DOM Content Event Listener
 document.addEventListener('DOMContentLoaded', function () {
+    // Add event listeners to all follow/unfollow buttons
     document.querySelectorAll('.follow-button, .unfollow-button').forEach(button => {
         button.addEventListener('click', function () {
             const userId = button.dataset.id;
@@ -41,15 +42,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 return response.json();
             })
             .then(data => {
-                if (data.user_followed) {
-                    button.textContent = 'Unfollow';
-                    button.className = 'unfollow-button';
-                } else {
-                    button.textContent = 'Follow';
-                    button.className = 'follow-button';
-                }
-
-                document.querySelector('#follow-count').textContent = 'Followers: ' + data.followers;
+                // Update all follow/unfollow buttons and follow counts for this user
+                document.querySelectorAll(`[data-id='${userId}']`).forEach(button => {
+                    if (data.user_followed) {
+                        button.textContent = 'Unfollow';
+                        button.className = 'unfollow-button';
+                    } else {
+                        button.textContent = 'Follow';
+                        button.className = 'follow-button';
+                    }
+                });
+                // Update follow count for this user
+                document.querySelectorAll('#follow-count-' + userId).forEach(followCount => {
+                    followCount.textContent = 'Followers: ' + data.followers;
+                });
             })
             .catch(error => {
                 console.error('There was a problem with the fetch operation:', error);
