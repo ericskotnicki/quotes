@@ -5,7 +5,6 @@
     <hr>
 
     <div class="container">
-
         <!-- Update profile link --> 
         {% if user == userprofile %}
             <div class="update-profile-container">
@@ -13,8 +12,6 @@
             </div>
             <br>
         {% endif %}
-
-
 
         <!-- User Profile Info -->
         <div class="profile-info">
@@ -24,6 +21,7 @@
                 <p>No profile picture.</p>
             {% endif %}
             <br>
+
             <!-- Follow/Unfollow user -->
             {% if user != userprofile and user.is_authenticated %}
                 <div class="d-flex align-items-center">
@@ -38,55 +36,63 @@
                 </div>
             {% endif %}
             
-            <!-- User info -->
-            {% if user == userprofile %}
-                <table class="user-info-table">
-                    <tr><td><strong>Username:</strong></td><td style="padding-left: 20px;">{{ userprofile.username }}</td></tr>
-                    <tr><td><strong>Email:</strong></td><td style="padding-left: 20px;">{{ userprofile.email }}</td></tr>
-                    <tr><td><strong>Date Joined:</strong></td><td style="padding-left: 20px;">{{ userprofile.date_joined|date:"F d, Y" }}</td></tr>
-                    <tr><td><strong>Country:</strong></td><td style="padding-left: 20px;">{{ userprofile.userprofile.country_of_origin }}</td></tr>
-                    <tr><td><strong>Birthday:</strong></td><td style="padding-left: 20px;">{{ userprofile.userprofile.birthday }}</td></tr>
-                    <tr><td><strong>Followers:</strong></td><td style="padding-left: 20px;">{{ userprofile.followers.count }}</td></tr>
-                    <tr><td><strong>Following:</strong></td><td style="padding-left: 20px;">{{ userprofile.following.count }}</td></tr>
-                    <tr><td><strong>Quotes:</strong></td><td style="padding-left: 20px;">{{ quote_count }}</td></tr>
-                    <tr><td><strong>Comments:</strong></td><td style="padding-left: 20px;">{{ comment_count }}</td></tr>
-                    <tr><td><strong>Likes:</strong></td><td style="padding-left: 20px;">{{ like_count }}</td></tr>
-                </table>
-            {% endif %}
         </div>
         <hr>
 
         <!-- Profile Links -->
-        <div class="profile-links">
+        <div class="profile-links-view" id="profile-links-view">
             <a href="#" class="overview-link" id="overview-link">Overview</a>
             <a href="#" class="posts-link" id="posts-link">Posts</a>
-            <a href="#" class="comments-link"  id="comments-link">Comments</a>
-            <a href="#" class="saved-link"  id="saved-link">Saved</a>
-            <a href="#" class="liked-link"  id="liked-link">Liked</a>
-            <a href="#" class="history-link"  id="history-link">History</a>
+            <a href="#" class="comments-link" id="comments-link">Comments</a>
+            <a href="#" class="saved-link" id="saved-link">Saved</a>
+            <a href="#" class="liked-link" id="liked-link">Liked</a>
+            <a href="#" class="history-link" id="history-link">History</a>
         </div>
 
-        <!-- Profile Views - refer to JavaScript /quote/static//quote/profile.js -->
-        <!-- overview, posts, comments, saved, liked, history-->
-        <div class="profile-view" id="profile-view">
+        <!-- Profile Views - refer to JavaScript controlling view display '/quote/static//quote/profile.js' -->
+        <div class="profile-view" id="profile-view" data-id="{{ userprofile.id }}">
 
-            <!-- overview -->
-            <div id="overview-view">Overview</div>
+            <!-- Overview -->
+            <div class="overview-view" id="overview-view">
+                <!-- User info -->
+                {% if user == userprofile %}
+                    <table class="user-info-table">
+                        <tr><td><strong>Username:</strong></td><td style="padding-left: 20px;">{{ userprofile.username }}</td></tr>
+                        <tr><td><strong>Email:</strong></td><td style="padding-left: 20px;">{{ userprofile.email }}</td></tr>
+                        <tr><td><strong>Date Joined:</strong></td><td style="padding-left: 20px;">{{ userprofile.date_joined|date:"F d, Y" }}</td></tr>
+                        <tr><td><strong>Country:</strong></td><td style="padding-left: 20px;">{{ userprofile.userprofile.country_of_origin }}</td></tr>
+                        <tr><td><strong>Birthday:</strong></td><td style="padding-left: 20px;">{{ userprofile.userprofile.birthday }}</td></tr>
+                        <tr><td><strong>Followers:</strong></td><td style="padding-left: 20px;">{{ userprofile.followers.count }}</td></tr>
+                        <tr><td><strong>Following:</strong></td><td style="padding-left: 20px;">{{ userprofile.following.count }}</td></tr>
+                        <tr><td><strong>Quotes:</strong></td><td style="padding-left: 20px;">{{ quote_count }}</td></tr>
+                        <tr><td><strong>Comments:</strong></td><td style="padding-left: 20px;">{{ comment_count }}</td></tr>
+                        <tr><td><strong>Likes:</strong></td><td style="padding-left: 20px;">{{ like_count }}</td></tr>
+                    </table>
+                {% endif %}
+            </div>
 
-            <!-- comments -->
-            <div id="comments-view">Comments</div>
+            <!-- Comments -->
+            <div class="comments-view" id="comments-view">
 
-            <!-- saved -->
-            <div id="saved-view">Saved</div>
+            </div>
 
-            <!-- liked -->
-            <div id="liked-view">Liked</div>
+            <!-- Saved -->
+            <div class="saved-view" id="saved-view">
 
-            <!-- history -->
-            <div id="history-view">History</div>
+            </div>
 
-            <!-- posts -->
-            <div id="posts-view">
+            <!-- Liked -->
+            <div class="liked-view" id="liked-view">
+
+            </div>
+
+            <!-- History -->
+            <div class="history-view" id="history-view">
+
+            </div>
+
+            <!-- Posts -->
+            <div class="posts-view" id="posts-view">
                 {% if page_obj %}
                     {% for quote in page_obj %}
                         <div class="row">
@@ -174,12 +180,10 @@
                             </ul>
                         </nav>
                     </div>
-                    
                 {% else %}
                     <p>No posts.</p>
                 {% endif %}
             </div>
-            <!-- End posts view -->
 
         </div>
     </div>

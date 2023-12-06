@@ -14,24 +14,28 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#history-view').addEventListener('click', () => loadProfile('history'));
 
     // By default, load 'posts' view
-    loadProfile('posts');
+    loadProfile('overview');
 });
 
 
 // Load Profile Views
 function loadProfile(view) {
-
-    // Show the posts view
-    document.querySelector('#overview-view').style.display = 'none';
-    document.querySelector('#posts-view').style.display = 'block';
-    document.querySelector('#comments-view').style.display = 'none';
-    document.querySelector('#saved-view').style.display = 'none';
-    document.querySelector('#liked-view').style.display = 'none';
-    document.querySelector('#history-view').style.display = 'none';
+    console.log(`Loading profile view: ${view}`)
 
     // Show the view name
     document.querySelector('#profile-view').innerHTML = `<h2>${view.charAt(0).toUpperCase() + view.slice(1)}</h2>`;
 
+    // Hide all views
+    document.querySelectorAll('.view').forEach(viewElement => {
+        viewElement.style.display = 'none';
+    });
+
+    // Show the selected view
+    const selectedView = document.querySelector(`#${view}-view`);
+    if (selectedView) {
+        selectedView.style.display = 'block';
+    }
+    
     // Access user profile info
     // fetch(`/profile/${}`)
 }

@@ -57,9 +57,6 @@ def register(request):
         if password != confirmation:
             messages.error(request, "Passwords must match.")
             return HttpResponseRedirect(reverse("register"))
-            # return render(request, "quote/register.html", {
-            #     "message": "Passwords must match."
-            # })
 
         # Attempt to create new user for User and UserProfile models
         try:
@@ -70,9 +67,6 @@ def register(request):
         except IntegrityError:
             messages.error(request, "Username already taken.")
             return HttpResponseRedirect(reverse("register"))
-            # return render(request, "quote/register.html", {
-            #     "message": "Username already taken."
-            # })
         
         # If user is created successfully, log them in and redirect to index page
         messages.success(request, f"Welcome to Quotes, {username}!")
@@ -88,7 +82,6 @@ def login_view(request):
         # If user submits empty forms, display error message
         if not request.POST["username"] or not request.POST["password"]:
             messages.error(request, "All fields must be filled out.")
-            # return render(request, "network/login.html")
             return HttpResponseRedirect(reverse("login"))
 
         # Attempt to sign user in
@@ -105,9 +98,7 @@ def login_view(request):
         else:
             messages.error(request, "Invalid username and/or password.")
             return HttpResponseRedirect(reverse("login"))
-            # return render(request, "quote/login.html", {
-            #     "message": "Invalid username and/or password."
-            # })
+        
     else:
         return render(request, "quote/login.html")
 
@@ -160,7 +151,6 @@ def post_view(request):
             post.categories.add(category)
 
         messages.success(request, "Successful post!")
-
         return HttpResponseRedirect(reverse("index"))
     
     else:
@@ -179,8 +169,9 @@ def search(request):
         return render(request, 'quote/search.html', {'form': form})
 
 """
-@login_required
-def profile(request, view):
+def profile_view(request, view):
+
+    user = json.loads(request.body)['userprofile_id']
 
     # Filter content returned based on view
     if view == "following":
@@ -188,53 +179,62 @@ def profile(request, view):
         user = request.user
         following = user.following.all()
         quotes = Quote.objects.filter(user__in=following).order_by('-timestamp')
+        return JsonResponse(data)
 
     elif view == "followers":
         # Get the logged in user's followers
         user = request.user
         followers = user.followers.all()
         quotes = Quote.objects.filter(user__in=followers).order_by('-timestamp')
+        return JsonResponse(data)
 
     elif view == "liked":
         # Get the logged in user's liked quotes
         user = request.user
         quotes = Quote.objects.filter(likes__user=user).order_by('-timestamp')
+        return JsonResponse(data)
 
     else:
         # Get the user's profile
         user = User.objects.get(pk=view)
         quotes = Quote.objects.filter(user=user).order_by('-timestamp')
+        return JsonResponse(data)
 """
 
 
 def profile(request, id):
-    # Get the user's profile
-    userprofile = User.objects.get(pk=id)
+    try:
+        # Get the user's profile
+        userprofile = User.objects.get(pk=id)
 
-    quotes = Quote.objects.filter(user=userprofile).order_by('-timestamp')
+        quotes = Quote.objects.filter(user=userprofile).order_by('-timestamp')
 
-    paginator = Paginator(quotes, 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+        paginator = Paginator(quotes, 10)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
 
-    # Get count of quotes, comments, and likes
-    quote_count = Quote.objects.filter(user=userprofile).count()
-    comment_count = Comment.objects.filter(user=userprofile).count()
-    like_count = Like.objects.filter(user=userprofile).count()
+        # Get count of quotes, comments, and likes
+        quote_count = Quote.objects.filter(user=userprofile).count()
+        comment_count = Comment.objects.filter(user=userprofile).count()
+        like_count = Like.objects.filter(user=userprofile).count()
 
-    # Determine if the current user is following the user whose profile is being viewed
-    is_following = False
-    if request.user.is_authenticated:
-        is_following = Follow.objects.filter(follower=request.user, followed=userprofile).exists()
+        # Determine if the current user is following the user whose profile is being viewed
+        is_following = False
+        if request.user.is_authenticated:
+            is_following = Follow.objects.filter(follower=request.user, followed=userprofile).exists()
 
-    return render(request, "quote/profile.html", {
-        'page_obj': page_obj,
-        'userprofile': userprofile,
-        'quote_count': quote_count,
-        'comment_count': comment_count,
-        'like_count': like_count,
-        'is_following': is_following,
-    })
+        return render(request, "quote/profile.html", {
+            'page_obj': page_obj,
+            'userprofile': userprofile,
+            'quote_count': quote_count,
+            'comment_count': comment_count,
+            'like_count': like_count,
+            'is_following': is_following,
+        })
+    
+    except ObjectDoesNotExist:
+        # Handle the case where the user with the specified ID does not exist
+        return HttpResponse("User does not exist", status=404)
 
 
 @login_required
@@ -279,7 +279,6 @@ def update_profile(request):
         # Save the changes
         user.save()
         userprofile.save()
-
         messages.success(request, "Profile updated successfully!")
         return HttpResponseRedirect(reverse("profile", args=(user.id,)))
 
@@ -291,7 +290,7 @@ def update_profile(request):
 
 
 def quote(request, id):
-    # Get quote from a post that a user clicked on. Display the quote, its comments, like button, like count, and comment form.
+    # Get quote from a post that a user clicked on
     quote = Quote.objects.get(id=id)
     comments = Comment.objects.filter(quote=quote)
     likes = Like.objects.filter(quote=quote)
@@ -380,10 +379,8 @@ def category(request, name):
 def following(request):
     user = request.user
 
-    # Get the logged in user's following
+    # Get the logged in user's following and count
     following = user.following.all()
-
-    # Get following count
     following_count = user.following.all().count()
 
     # Get all quotes by the users that the logged in user is following and paginate
@@ -428,6 +425,7 @@ def follow(request, id):
     }
 
     return JsonResponse(data)
+
 
 @csrf_exempt
 @login_required
@@ -479,8 +477,8 @@ def like(request, id):
     # Create a JSON response to send back to the client
     data = {
         'likes': quote.likes.count(),   # Updated likes count
-        'liked_by': liked_by,          # List of users that liked the post
-        'user_liked': user_liked,       # Boolean value to determine if user liked the post
+        'liked_by': liked_by,    # List of users that liked the post
+        'user_liked': user_liked,     # Boolean value to determine if user liked the post
     }
 
     return JsonResponse(data)
