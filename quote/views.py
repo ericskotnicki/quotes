@@ -55,9 +55,11 @@ def register(request):
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
-            return render(request, "quote/register.html", {
-                "message": "Passwords must match."
-            })
+            messages.error(request, "Passwords must match.")
+            return HttpResponseRedirect(reverse("register"))
+            # return render(request, "quote/register.html", {
+            #     "message": "Passwords must match."
+            # })
 
         # Attempt to create new user for User and UserProfile models
         try:
@@ -66,9 +68,11 @@ def register(request):
             userprofile.save()
             user.save()
         except IntegrityError:
-            return render(request, "quote/register.html", {
-                "message": "Username already taken."
-            })
+            messages.error(request, "Username already taken.")
+            return HttpResponseRedirect(reverse("register"))
+            # return render(request, "quote/register.html", {
+            #     "message": "Username already taken."
+            # })
         
         # If user is created successfully, log them in and redirect to index page
         messages.success(request, f"Welcome to Quotes, {username}!")
