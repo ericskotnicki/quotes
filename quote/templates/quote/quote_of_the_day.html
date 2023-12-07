@@ -4,14 +4,15 @@
     <h2>Quote of the Day</h2>
     <hr>
 
+    <!-- Display quote of the day -->
     <div class="container">
-        <!-- If a quote is liked more than 5 times in one day, it becomes the quote of the day; otherwise, a random quote is chosen. -->
-        <!-- Display quote of the day -->
         <div class="row">
             <div class="card">
                 <div class="card-body">
+
                     <!-- User info -->
                     <div class="d-flex align-items-center mb-3">
+
                         <!-- Profile Picture -->
                         {% if quote_of_the_day.user.userprofile.profile_picture %}
                             <img class="rounded-circle" src="{{ quote_of_the_day.user.userprofile.profile_picture.url }}" alt="User Profile Picture" style="width: 40px; height: 40px;">
@@ -22,18 +23,20 @@
                             <p class="text-muted small mr-2">Posted by <a href="{% url 'profile' quote_of_the_day.user.id %}">/{{ quote_of_the_day.user.username }}</a></p>
                             <p class="text-muted small">{{ quote_of_the_day.timestamp|timesince }} ago</p>
                         </div>
-                        <!-- Follow/Unfollow user -->
+
+                        <!-- Follow/Unfollow user (AJAX) -->
                         {% if user != quote_of_the_day.user %}
                             <div class="d-flex align-items-center position-absolute" style="right:0;">
-                                <p class="follow-count" id="follow-count" style="font-size: 0.8rem; margin-right: 10px; margin-top: 20px;">Followers: {{ quote_of_the_day.user.followers.count }}</p>
+                                <p class="follow-count" id="follow-count-{{ quote_of_the_day.user.id }}" style="font-size: 0.8rem; margin-right: 10px; margin-top: 20px;">Followers: {{ quote_of_the_day.user.followers.count }}</p>
                                 {% if is_following %}
-                                    <button class="unfollow-button" id="unfollow-button" data-id="{{ quote_of_the_day.user.id }}">Unfollow</button>
+                                    <button class="unfollow-button" id="unfollow-button-{{ quote_of_the_day.user.id }}" data-id="{{ quote_of_the_day.user.id }}">Unfollow</button>
                                 {% else %}
-                                    <button class="follow-button" id="follow-button" data-id="{{ quote_of_the_day.user.id }}">Follow</button>
+                                    <button class="follow-button" id="follow-button-{{ quote_of_the_day.user.id }}" data-id="{{ quote_of_the_day.user.id }}">Follow</button>
                                 {% endif %}
                             </div>
                         {% endif %}
                     </div>
+
                     <!-- Quote info -->
                     <div class="media">
                         <img class="mr-3" src="{{ quote_of_the_day.author.image.url }}" alt="Author Image" style="width: 150px; height: 150px; border-radius: 2px; object-fit: cover;">
