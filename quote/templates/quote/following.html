@@ -30,7 +30,7 @@
                             {% if user != quote.user and user.is_authenticated %}
                                 <div class="d-flex align-items-center position-absolute" style="right:0;">
                                     <p class="follow-count" id="follow-count-{{ quote.user.id }}" style="font-size: 0.8rem; margin-right: 10px; margin-top: 20px;">Followers: {{ quote.user.followers.count }}</p>
-                                    {% if quote.user.id in followed_users %}
+                                    {% if quote.user.id in following_users %}
                                         <button class="unfollow-button" id="unfollow-button-{{ quote.user.id }}" data-id="{{ quote.user.id }}">Unfollow</button>
                                     {% else %}
                                         <button class="follow-button" id="follow-button-{{ quote.user.id }}" data-id="{{ quote.user.id }}">Follow</button>

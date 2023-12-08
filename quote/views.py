@@ -397,6 +397,11 @@ def category(request, name):
 @login_required
 def following(request):
 
+    # Determine which users the current user is following
+    following_users = []
+    if request.user.is_authenticated:
+        following_users = Follow.objects.filter(follower=request.user).values_list('followed', flat=True)
+
     followed_users = User.objects.filter(followers__follower=request.user)
     quotes = Quote.objects.filter(user__in=followed_users).order_by('-timestamp')
 
@@ -410,6 +415,7 @@ def following(request):
 
     return render(request, "quote/following.html", {
         'page_obj': page_obj,
+        'following_users': following_users,
         'followed_users': followed_users,
         'liked_quotes': liked_quotes,
     })
@@ -492,6 +498,36 @@ def like(request, id):
         'likes': Like.objects.filter(quote=quote).count(),   # Updated likes count
         'liked_by': liked_by,    # List of users that liked the post
         'user_liked': user_liked,     # Boolean value to determine if user liked the post
+    }
+
+    return JsonResponse(data)
+
+
+@csrf_exempt
+@login_required
+def edit(request, id):
+
+    quote_id = json.loads(request.body)['quote_id']
+    quote = Quote.objects.get(id=quote_id)
+
+    # Update quote in database
+
+    data = {
+        'quote': quote,
+    }
+
+    return JsonResponse(data)
+
+
+@csrf_exempt
+@login_required
+def comment(request, id):
+    quote_id = json.loads(request.body)['quote_id']
+
+    quote = Quote.objects.get(id=quote_id)
+
+    data = {
+        'comment': comment,
     }
 
     return JsonResponse(data)

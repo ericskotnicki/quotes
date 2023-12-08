@@ -1,26 +1,26 @@
-# Ignore project notes
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files
+
+# Python
+**/quote/__pycache__/
+
+# Django
+db.sqlite3
+
+# project notes
 project_notes.txt
 
-# Ignore quotes text file
+# txt, csv and json files containing quotes for website initiation
 quotes.txt
-
-# Ignore quotes CSV file
 quotes.csv
-
-# Ignore JSON files in quotes directory
+Quotes2.csv
 quotes.json
 
-# Ignore second quotes CSV file
-Quotes2.csv
-
-# Ignore .vscode settings
-.vscode/settings.json
+# vs code settings
+.vscode/
 
 # Ignore .DS_Store files
 **/.DS_Store
 
-# Ignore virtual environment folder
+# virtual environment
 venv/
 
-# Ignore pycache folder
-**/quote/__pycache__/
