@@ -42,11 +42,11 @@
                         <img class="mr-3" src="{{ quote_of_the_day.author.image.url }}" alt="Author Image" style="width: 150px; height: 150px; border-radius: 2px; object-fit: cover;">
                         <div class="media-body">
                             <blockquote>
-                                <p>"{{ quote_of_the_day.text }}"</p>
+                                <p class="text-quote">"{{ quote_of_the_day.text }}"</p>
                                 <a href="{% url 'author' quote_of_the_day.author.id %}"><footer>- {{ quote_of_the_day.author.name }}</footer></a>
                             </blockquote>
                             <br>
-                            <p style="font-size: 0.9em;">Categories:  
+                            <p class="categories-text" style="font-size: 0.9em;">Categories:  
                                 {% for category in quote_of_the_day.categories.all|dictsort:"name" %}
                                     <a href="{% url 'category' category.name %}">{{ category.name }}</a>{% if not forloop.last %}, {% endif %}
                                 {% endfor %}

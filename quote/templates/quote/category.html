@@ -11,8 +11,10 @@
             <div class="row">
                 <div class="card">
                     <div class="card-body">
+
                         <!-- User info -->
                         <div class="d-flex align-items-center mb-3">
+
                             <!-- Profile Picture -->
                             {% if quote.user.userprofile.profile_picture %}
                                 <img class="rounded-circle" src="{{ quote.user.userprofile.profile_picture.url }}" alt="User Profile Picture" style="width: 40px; height: 40px;">
@@ -24,6 +26,7 @@
                                 <p class="text-muted small">{{ quote.timestamp|timesince }} ago</p>
                             </div>
                         </div>
+
                         <!-- Quote info -->
                         <div class="media">
                             {% if quote.author.image %} 
@@ -33,16 +36,33 @@
                             {% endif %}
                             <div class="media-body">
                                 <blockquote>
-                                    <p>"{{ quote.text }}"</p>
+                                    <p class="text-quote">"{{ quote.text }}"</p>
                                     <a href="{% url 'author' quote.author.id %}"><footer>- {{ quote.author.name }}</footer></a>
                                 </blockquote>
-                                <p>Categories:  
+                                <p class="categories-text" style="font-size: 0.9em;">Categories:  
                                     {% for category in quote.categories.all|dictsort:"name" %}
                                         <a href="{% url 'category' category.name %}">{{ category.name }}</a>{% if not forloop.last %}, {% endif %}
                                     {% endfor %}
                                 </p>
                             </div>
                         </div>
+
+                        <!-- Like Button Font Awesome 5 Heart (AJAX)
+                            fas fa-heart (heart is filled)
+                            far fa-heart (heart is void)
+                        -->
+                        {% if user.is_authenticated %}
+                            <button style="text-decoration: none;" class="btn btn-link like-btn" id="like-btn-{{quote.id}}" data-id="{{quote.id}}">
+                                <i id="like-icon-{{quote.id}}" class="like-icon {% if quote.id in liked_quotes %}fas fa-heart{% else %}far fa-heart{% endif %}"></i>
+                                <span id="like-count-{{quote.id}}" class="like-count">{{ quote.likes.count }}</span>
+                            </button>
+                        {% endif %}
+
+                        <!-- Comment Icon (AJAX) -->
+                        {% if user.is_authenticated %}
+
+                        {% endif %}
+                        
                     </div>
                 </div>
             </div>

@@ -15,7 +15,7 @@
         <!-- Website Icon (favicon) -->
         <link rel="icon" href="{% static 'quote/favicon.ico' %}" type="image/x-icon">
         <!-- Font Awesome Icons -->
-        <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"> -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
         <!-- jQuery, then Popper.js, then Bootstrap JS -->
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -82,7 +82,7 @@
                 </ul>
 
                 <!-- Dark mode Toggle -->
-                <button type="button" id="theme-toggle">Dark Mode</button>
+                <button type="button" class="btn-theme-toggle" id="theme-toggle">Dark Mode</button>
 
                 <!-- Search Bar -->
                 <form action="{% url 'search' %}" method="get" role="search" autocomplete="off">

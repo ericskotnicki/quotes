@@ -42,6 +42,28 @@ body.dark-theme {
     width: 100%;
 }
 
+
+/* Theme toggle dark mode button */
+.btn-theme-toggle {
+    background-color: #8B0000;
+    border: none;
+    color: #D3D3D3;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1rem;
+    margin: 3px 3px;
+    cursor: pointer;
+    border-radius: 50px;
+    transition: background-color 0.3s ease;
+}
+
+/* Add hover effect */
+.btn-theme-toggle:hover {
+    background-color: #B22222;
+}
+
 h2 {
     margin: 20px 20px;
     text-align: center;
@@ -85,7 +107,6 @@ h2 {
 .nav-link {
     font-size: 0.9em;
 }
-
 
 /* Search bar */
 .search-bar {
@@ -161,7 +182,7 @@ h2 {
 .user-info-table {
     font-size: 0.8em;
     font-family: 'Roboto', sans-serif;
-    color: #777;
+    color: #999;
     margin: 0 auto 20px auto;
 }
 
@@ -172,6 +193,18 @@ h2 {
     align-items: center;
     width: 100%;
     margin: 0 auto 20px auto;
+}
+
+.text-quote {
+    color: #b9b9b9;
+}
+
+.follow-count {
+    color: #b9b9b9;
+}
+
+.categories-text {
+    color: #b9b9b9;
 }
 
 
@@ -400,4 +433,8 @@ option.light-gray {
 .timestamp {
     color: grey;
     font-size: 12px;
+}
+
+.liked {
+    color: red;
 }

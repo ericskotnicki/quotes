@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 action = 'unfollow';
             }
 
-            // Send POST request to /follow or /unfollow
+            // Send POST request to /follow or /unfollow view
             fetch(`/${action}/${userId}`, {
                 method: 'POST',
                 headers: {

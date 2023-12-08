@@ -8,7 +8,12 @@ from django.contrib.contenttypes.models import ContentType
 
 class User(AbstractUser):
     """username, password, date_joined, email, first_name, last_name, is_active, is_staff, is_superuser, last_login"""
-    pass
+    
+    # Helper methods
+    
+    # Checks if user has liked a quote
+    def has_liked(self, quote):
+        return self.likes.filter(quote=quote).exists()
 
 
 class UserProfile(models.Model):
@@ -53,6 +58,8 @@ class Quote(models.Model):
         return f'"{self.text}" - {self.author}'
     
     # Helper methods
+    def is_liked_by_user(self, user):
+        return self.likes.filter(user=user).exists()
     
 
 class Follow(models.Model):
@@ -85,9 +92,9 @@ class Comment(models.Model):
 class Like(models.Model):
     """Represents likes on quotes, comments, and authors."""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='likes')
-    quote = models.ForeignKey(Quote, on_delete=models.CASCADE, related_name='likes')
-    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='likes')
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='likes')
+    quote = models.ForeignKey(Quote, on_delete=models.CASCADE, related_name='likes', null=True)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='likes', null=True)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='likes', null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     # user = User.objects.get(username='username') -> get user object

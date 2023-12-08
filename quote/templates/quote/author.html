@@ -37,10 +37,10 @@
                         <div class="media">
                             <div class="media-body">
                                 <blockquote>
-                                    <p>"{{ quote.text }}"</p>
+                                    <p class="text-quote">"{{ quote.text }}"</p>
                                     <!-- <footer>- {{ quote.author.name }}</footer> -->
                                 </blockquote>
-                                <p>Categories:  
+                                <p class="categories-text" style="font-size: 0.9em;">Categories:  
                                     {% for category in quote.categories.all|dictsort:"name" %}
                                         <a href="{% url 'category' category.name %}">{{ category.name }}</a>{% if not forloop.last %}, {% endif %}
                                     {% endfor %}

@@ -5,12 +5,12 @@ from django.contrib.auth import authenticate, login, logout, update_session_auth
 from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.forms import PasswordChangeForm
-from django.core import serializers
 from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
-from django.db import models, IntegrityError
+from django.db import IntegrityError, models
 from django.core.files.images import ImageFile
+from django.contrib.auth.forms import PasswordChangeForm
+from django.core import serializers
 import json
 import pycountry
 
@@ -30,6 +30,11 @@ def index(request):
     if request.user.is_authenticated:
         following_users = Follow.objects.filter(follower=request.user).values_list('followed', flat=True)
 
+    # Determine if logged in user has liked the quote
+    liked_quotes = []
+    if request.user.is_authenticated:
+        liked_quotes = Like.objects.filter(user=request.user).values_list('quote', flat=True)
+
     # Paginate
     paginator = Paginator(quotes, 10)
     page_number = request.GET.get('page')
@@ -38,6 +43,7 @@ def index(request):
     return render(request, "quote/index.html", {
         'page_obj': page_obj,
         'following_users': following_users,
+        'liked_quotes': liked_quotes,
     })
 
 
@@ -223,6 +229,9 @@ def profile(request, id):
         if request.user.is_authenticated:
             is_following = Follow.objects.filter(follower=request.user, followed=userprofile).exists()
 
+        # Get the list of quotes liked but the current user
+        liked_quotes = list(request.user.likes.values_list('quote_id', flat=True)) if request.user.is_authenticated else []
+
         return render(request, "quote/profile.html", {
             'page_obj': page_obj,
             'userprofile': userprofile,
@@ -230,6 +239,7 @@ def profile(request, id):
             'comment_count': comment_count,
             'like_count': like_count,
             'is_following': is_following,
+            'liked_quotes': liked_quotes,
         })
     
     except ObjectDoesNotExist:
@@ -343,9 +353,14 @@ def author(request, id):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    # infer the user that created the author info based on who posted the first quote
+    first_quote = Quote.objects.filter(author=author).order_by('timestamp').first()
+    created_by = first_quote.user if first_quote else None
+
     return render(request, "quote/author.html", {
         'author': author,
         'page_obj': page_obj,
+        'created_by': created_by,
     })
 
 
@@ -369,37 +384,34 @@ def category(request, name):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    # Get the list of quotes liked but the current user
+    liked_quotes = list(request.user.likes.values_list('quote_id', flat=True)) if request.user.is_authenticated else []
+
     return render(request, "quote/category.html", {
         'category': category,
         'page_obj': page_obj,
+        'liked_quotes': liked_quotes,
     })
 
 
 @login_required
 def following(request):
-    user = request.user
 
-    # Get the logged in user's following and count
-    following = user.following.all()
-    following_count = user.following.all().count()
+    followed_users = User.objects.filter(followers__follower=request.user)
+    quotes = Quote.objects.filter(user__in=followed_users).order_by('-timestamp')
 
-    # Get all quotes by the users that the logged in user is following and paginate
-    try:
-        quotes = Quote.objects.filter(user__in=following).order_by('-timestamp')
+    # Paginate
+    paginator = Paginator(quotes, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
-        paginator = Paginator(quotes, 10)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
+    # Get the list of quotes liked but the current user
+    liked_quotes = list(request.user.likes.values_list('quote_id', flat=True)) if request.user.is_authenticated else []
 
-        return render(request, "quote/following.html", {
-            'page_obj': page_obj,
-        })
-    except:
-        quotes = None
-    
     return render(request, "quote/following.html", {
-        'quotes': quotes,
-        'following_count': following_count,
+        'page_obj': page_obj,
+        'followed_users': followed_users,
+        'liked_quotes': liked_quotes,
     })
 
 
@@ -460,23 +472,24 @@ def like(request, id):
 
     # Get the quote object from the database
     quote = Quote.objects.get(id=quote_id)
-    
-    # Set initial user liked quote state to False
-    user_liked = False
 
     # Check if logged in user has already liked the quote
-    if quote.likes.filter(id=request.user.id).exists():
-        quote.likes.remove(request.user)
+    like = Like.objects.filter(user=request.user, quote=quote).first()
+    if like:
+        # If user already liked the quote then delete the Like object
+        like.delete()
+        user_liked = False
     else:
-        quote.likes.add(request.user)
+        # If user hasn't liked the quote then create a new Like object
+        Like.objects.create(user=request.user, quote=quote)
         user_liked = True
-    
+
     # Get the users that liked the post
-    liked_by = [user.username for user in quote.likes.all()]
+    liked_by = [like.user.username for like in Like.objects.filter(quote=quote)]
 
     # Create a JSON response to send back to the client
     data = {
-        'likes': quote.likes.count(),   # Updated likes count
+        'likes': Like.objects.filter(quote=quote).count(),   # Updated likes count
         'liked_by': liked_by,    # List of users that liked the post
         'user_liked': user_liked,     # Boolean value to determine if user liked the post
     }
