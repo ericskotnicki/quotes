@@ -15,7 +15,7 @@ import json
 import pycountry
 
 # Import Models & Forms
-from .models import User, Quote, Author, UserProfile, Category, Follow, Comment, Like
+from .models import User, Quote, Author, UserProfile, Category, Follow, Comment, Like, Bookmark
 from .forms import SearchForm
 
 
@@ -35,6 +35,10 @@ def index(request):
     if request.user.is_authenticated:
         liked_quotes = Like.objects.filter(user=request.user).values_list('quote', flat=True)
 
+    bookmarked_quotes = []
+    if request.user.is_authenticated:
+        bookmarked_quotes = Bookmark.objects.filter(user=request.user).values_list('quote', flat=True)
+
     # Paginate
     paginator = Paginator(quotes, 10)
     page_number = request.GET.get('page')
@@ -44,6 +48,7 @@ def index(request):
         'page_obj': page_obj,
         'following_users': following_users,
         'liked_quotes': liked_quotes,
+        'bookmarked_quotes': bookmarked_quotes,
     })
 
 
@@ -223,6 +228,7 @@ def profile(request, id):
         quote_count = Quote.objects.filter(user=userprofile).count()
         comment_count = Comment.objects.filter(user=userprofile).count()
         like_count = Like.objects.filter(user=userprofile).count()
+        bookmark_count = Bookmark.objects.filter(user=userprofile).count()
 
         # Determine if the current user is following the user whose profile is being viewed
         is_following = False
@@ -238,6 +244,7 @@ def profile(request, id):
             'quote_count': quote_count,
             'comment_count': comment_count,
             'like_count': like_count,
+            'bookmark_count': bookmark_count,
             'is_following': is_following,
             'liked_quotes': liked_quotes,
         })
@@ -537,13 +544,37 @@ def edit(request, id):  # id retrieved from client (AJAX fetch)
 
 @csrf_exempt
 @login_required
-def comment(request, id):
+def bookmark(request, id):
+    # Get quote id from AJAX request
     quote_id = json.loads(request.body)['quote_id']
 
+    # Get the quote object from the database
     quote = Quote.objects.get(id=quote_id)
 
+    # Check if logged in user has already bookmarked the quote
+    bookmark = Bookmark.objects.filter(user=request.user, quote=quote).first()
+    if bookmark:
+        # If user already bookmarked the quote then delete the Bookmark object
+        bookmark.delete()
+        user_bookmarked = False
+    else:
+        # If user hasn't bookmarked the quote then create a new Bookmark object
+        Bookmark.objects.create(user=request.user, quote=quote)
+        user_bookmarked = True
+
+    # Get the users that bookmarked the post
+    bookmarked_by = [bookmark.user.username for bookmark in Bookmark.objects.filter(quote=quote)]
+
+    # Create a JSON response to send back to the client
     data = {
-        'comment': comment,
+        'bookmarked_by': bookmarked_by,    # List of users that liked the post
+        'user_bookmarked': user_bookmarked,     # Boolean value to determine if user liked the post
     }
 
     return JsonResponse(data)
+
+
+@csrf_exempt
+@login_required
+def comment(request, id):
+    pass

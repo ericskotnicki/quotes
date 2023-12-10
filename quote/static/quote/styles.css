@@ -394,7 +394,7 @@ h2 {
 }
 
 
-/* Like Button */
+/* Like Button/Icon */
 .like-btn {
     border: none;
     background-color: transparent;
@@ -446,7 +446,7 @@ option.light-gray {
 }
 
 
-/* Comment Button */
+/* Comment Button/Icon */
 .comment-btn {
     border: none;
     background-color: transparent;
@@ -480,5 +480,39 @@ option.light-gray {
 }
 
 .comment-count {
+    font-size: 18px;
+}
+
+
+/* Bookmark Button/Icon */
+.bookmark-btn {
+    border: none;
+    background-color: transparent;
+    color: #dc3545;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.bookmark-btn:hover #bookmark-icon {
+    color: red;
+}
+
+.bookmark-btn:hover {
+    color: #c82333;
+}
+
+.bookmark-btn:focus {
+    outline: none;
+}
+
+.bookmark-btn .fas {
+    transition: transform 0.2s ease-in-out;
+}
+
+.bookmark-btn .fas:hover {
+    transform: scale(1.2);
+}
+
+.bookmark-icon {
     font-size: 18px;
 }

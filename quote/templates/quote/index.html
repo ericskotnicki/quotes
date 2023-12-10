@@ -59,6 +59,7 @@
                             <div class="media-body">
                                 <blockquote>
                                     <p class="text-quote" id="quote-content-{{quote.id}}">"{{ quote.text }}"</p>
+                                    <!-- Edit link -->
                                     {% if user.is_authenticated and user == quote.user %}
                                         <a href="#" class="edit-link" id="edit-link-{{quote.id}}" data-id="{{quote.id}}">Edit</a>
                                     {% endif %}
@@ -73,26 +74,33 @@
                             </div>
                         </div>
 
-                        <!-- Like Icon Font Awesome 5 Heart (AJAX)
-                            fas fa-heart (heart is filled), far fa-heart (heart is void)
-                        -->
-                        {% if user.is_authenticated %}
-                            <button style="text-decoration: none;" class="btn btn-link like-btn" id="like-btn-{{quote.id}}" data-id="{{quote.id}}">
-                                <i id="like-icon-{{quote.id}}" class="like-icon {% if quote.id in liked_quotes %}fas fa-heart{% else %}far fa-heart{% endif %}"></i>
-                                <span id="like-count-{{quote.id}}" class="like-count">{{ quote.likes.count }}</span>
-                            </button>
-                        {% endif %}
+                        <div class="d-flex align-items-center mb-3 position-relative"> 
+                            <!-- Like Icon Font Awesome 5 - Heart (AJAX): fas fa-heart (heart is filled), far fa-heart (heart is void) -->
+                            {% if user.is_authenticated %}
+                                <button style="text-decoration: none;" class="btn btn-link like-btn" id="like-btn-{{quote.id}}" data-id="{{quote.id}}">
+                                    <i id="like-icon-{{quote.id}}" class="like-icon {% if quote.id in liked_quotes %}fas fa-heart{% else %}far fa-heart{% endif %}"></i>
+                                    <span id="like-count-{{quote.id}}" class="like-count">{{ quote.likes.count }}</span>
+                                </button>
+                            {% endif %}
 
-                        <!-- Comment Icon Font Awesome 5 Comment(AJAX) -->
-                        {% if user.is_authenticated %}
-                            <button style="text-decoration: none;" class="btn btn-link comment-btn" id="comment-btn-{{quote.id}}" data-id="{{quote.id}}">
-                                <i class="far fa-comment"></i>
-                                <span id="comment-count-{{quote.id}}" class="comment-count">{{ quote.comments.count }}</span>
-                            </button>
-                        {% endif %}
+                            <!-- Comment Icon Font Awesome 5 - Comment Bubble (AJAX) -->
+                            {% if user.is_authenticated %}
+                                <button style="text-decoration: none;" class="btn btn-link comment-btn" id="comment-btn-{{quote.id}}" data-id="{{quote.id}}">
+                                    <i id="comment-icon-{{quote.id}}" class="comment-icon {% if quote.id in commented_quotes %}fas fa-comment{% else %}far fa-comment{% endif %}"></i>
+                                    <span id="comment-count-{{quote.id}}" class="comment-count">{{ quote.comments.count }}</span>
+                                </button>
+                            {% endif %}
 
-                        <!-- Comment Form (AJAX) -->
-                        <div class="comment-form" id="comment-form">
+                            <!-- Bookmark Icon Font Awesome 5 (AJAX) -->
+                            {% if user.is_authenticated %}
+                                <button style="text-decoration: none;" class="btn btn-link bookmark-btn" id="bookmark-btn-{{quote.id}}" data-id="{{quote.id}}">
+                                    <i id="bookmark-icon-{{quote.id}}" class="bookmark-icon {% if quote.id in bookmarked_quotes %}fas fa-bookmark{% else %}far fa-bookmark{% endif %}"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+
+                        <!-- Display Comments (AJAX) -->
+                        <div class="comments" id="comments">
 
                         </div>
 

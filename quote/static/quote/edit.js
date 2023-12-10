@@ -4,7 +4,6 @@
 
 // DOM Content Event Listener
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM Content Loaded (edit.js)")
     // Create variables to store edit link button, textarea, original quote content to fill textarea and save button
     let activeEditLink = null;
     let activeQuoteContent = null;

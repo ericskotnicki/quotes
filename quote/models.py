@@ -104,14 +104,8 @@ class Like(models.Model):
     # quote.likes.all() -> returns all likes on the quote
 
 
-
-# Signals to create and save a UserProfile when a User is created or saved
-# @receiver(post_save, sender=User)
-# def create_user_profile(sender, instance, created, **kwargs):
-#     if created:
-#         UserProfile.objects.create(user=instance)
-
-# @receiver(post_save, sender=User)
-# def save_user_profile(sender, instance, **kwargs):
-#     if hasattr(instance, 'userprofile'):
-#         instance.userprofile.save()
+class Bookmark(models.Model):
+    """Represents bookmarks on posted quotes."""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookmarks')
+    quote = models.ForeignKey(Quote, on_delete=models.CASCADE, related_name='bookmarks', null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
