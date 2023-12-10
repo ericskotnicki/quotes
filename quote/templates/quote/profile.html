@@ -123,7 +123,11 @@
                                         {% endif %}
                                         <div class="media-body">
                                             <blockquote>
-                                                <p class="text-quote">"{{ quote.text }}"</p>
+                                                <p class="text-quote" id="quote-content-{{quote.id}}">"{{ quote.text }}"</p>
+                                            <!-- Edit Button -->
+                                            {% if user.is_authenticated and userprofile == user %}
+                                                <a href="#" class="edit-link" id="edit-link-{{quote.id}}" data-id="{{quote.id}}">Edit</a>
+                                            {% endif %}
                                                 <a href="{% url 'author' quote.author.id %}"><footer>- {{ quote.author.name }}</footer></a>
                                             </blockquote>
                                             <br>
@@ -136,19 +140,13 @@
                                     </div>
 
                                     <!-- Like Button Font Awesome 5 Heart (AJAX)
-                                        fas fa-heart (heart is filled)
-                                        far fa-heart (heart is void)
+                                        fas fa-heart (heart is filled), far fa-heart (heart is void)
                                     -->
                                     {% if user.is_authenticated %}
                                         <button style="text-decoration: none;" class="btn btn-link like-btn" id="like-btn-{{quote.id}}" data-id="{{quote.id}}">
                                             <i id="like-icon-{{quote.id}}" class="like-icon {% if quote.id in liked_quotes %}fas fa-heart{% else %}far fa-heart{% endif %}" data-user-liked="{% if user in quote.likes.all %}True{% else %}False{% endif %}"></i>
                                             <span id="like-count-{{quote.id}}" class="like-count">{{ quote.likes.count }}</span>
                                         </button>
-                                    {% endif %}
-
-                                    <!-- Edit Button -->
-                                    {% if userprofile.is_authenticated and userprofile == quote.user %}
-                                        <a href="#" id="edit-link" data-post-id="{{post.id}}">Edit</a>
                                     {% endif %}
                                 </div>
                             </div>

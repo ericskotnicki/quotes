@@ -505,18 +505,34 @@ def like(request, id):
 
 @csrf_exempt
 @login_required
-def edit(request, id):
+def edit(request, id):  # id retrieved from client (AJAX fetch)
+    try:
+        # Get original quote content from database
+        original_quote = Quote.objects.get(pk=id)
+    except ObjectDoesNotExist:
+        return JsonResponse({"error": "Quote not found."}, status=404)
 
-    quote_id = json.loads(request.body)['quote_id']
-    quote = Quote.objects.get(id=quote_id)
+    # Verify that the user is the owner of the posted quote before updating database
+    if request.user != original_quote.user:
+        return JsonResponse({"error": "User not authorized to edit this quote."}, status=400)
 
-    # Update quote in database
+    # Get edited quote content
+    if request.method == 'PUT':
+        data = json.loads(request.body)
+        # Check if content exists from client
+        if 'content' not in data:
+            return JsonResponse({"error": "Missing content in request."}, status=400)
+        edited_quote = data['content']
 
-    data = {
-        'quote': quote,
-    }
+        # Update database with edited quote text
+        original_quote.text = edited_quote
+        original_quote.save()
 
-    return JsonResponse(data)
+        # Send success message to client
+        return JsonResponse({"message": "Quote updated successfully."}, status=200)
+    
+    else:
+        return JsonResponse({"error": "PUT request required."}, status=400)
 
 
 @csrf_exempt

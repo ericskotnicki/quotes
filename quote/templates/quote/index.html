@@ -58,7 +58,10 @@
                             {% endif %}
                             <div class="media-body">
                                 <blockquote>
-                                    <p class="text-quote">"{{ quote.text }}"</p>
+                                    <p class="text-quote" id="quote-content-{{quote.id}}">"{{ quote.text }}"</p>
+                                    {% if user.is_authenticated and user == quote.user %}
+                                        <a href="#" class="edit-link" id="edit-link-{{quote.id}}" data-id="{{quote.id}}">Edit</a>
+                                    {% endif %}
                                     <a href="{% url 'author' quote.author.id %}"><footer>- {{ quote.author.name }}</footer></a>
                                 </blockquote>
                                 <br>
@@ -70,9 +73,8 @@
                             </div>
                         </div>
 
-                        <!-- Like Button Font Awesome 5 Heart (AJAX)
-                            fas fa-heart (heart is filled)
-                            far fa-heart (heart is void)
+                        <!-- Like Icon Font Awesome 5 Heart (AJAX)
+                            fas fa-heart (heart is filled), far fa-heart (heart is void)
                         -->
                         {% if user.is_authenticated %}
                             <button style="text-decoration: none;" class="btn btn-link like-btn" id="like-btn-{{quote.id}}" data-id="{{quote.id}}">
@@ -81,12 +83,18 @@
                             </button>
                         {% endif %}
 
-                        <!-- Comment Icon (AJAX) -->
+                        <!-- Comment Icon Font Awesome 5 Comment(AJAX) -->
                         {% if user.is_authenticated %}
-
+                            <button style="text-decoration: none;" class="btn btn-link comment-btn" id="comment-btn-{{quote.id}}" data-id="{{quote.id}}">
+                                <i class="far fa-comment"></i>
+                                <span id="comment-count-{{quote.id}}" class="comment-count">{{ quote.comments.count }}</span>
+                            </button>
                         {% endif %}
 
                         <!-- Comment Form (AJAX) -->
+                        <div class="comment-form" id="comment-form">
+
+                        </div>
 
                     </div>
                 </div>

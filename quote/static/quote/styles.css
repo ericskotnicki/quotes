@@ -45,7 +45,7 @@ body.dark-theme {
 
 /* Theme toggle dark mode button */
 .btn-theme-toggle {
-    background-color: #8B0000;
+    background-color: #111111;
     border: none;
     color: #D3D3D3;
     padding: 5px 10px;
@@ -53,15 +53,15 @@ body.dark-theme {
     text-decoration: none;
     display: inline-block;
     font-size: 1rem;
-    margin: 3px 3px;
+    margin: 5px 5px;
     cursor: pointer;
-    border-radius: 50px;
+    border-radius: 25px;
     transition: background-color 0.3s ease;
 }
 
 /* Add hover effect */
 .btn-theme-toggle:hover {
-    background-color: #B22222;
+    background-color: #171717;
 }
 
 h2 {
@@ -197,6 +197,12 @@ h2 {
 
 .text-quote {
     color: #b9b9b9;
+    margin-bottom: 10px;
+}
+
+.edit-link {
+    margin-top: 0px;
+    font-size: medium;
 }
 
 .follow-count {
@@ -437,4 +443,42 @@ option.light-gray {
 
 .liked {
     color: red;
+}
+
+
+/* Comment Button */
+.comment-btn {
+    border: none;
+    background-color: transparent;
+    color: #dc3545;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.comment-btn:hover #comment-icon {
+    color: red;
+}
+
+.comment-btn:hover {
+    color: #c82333;
+}
+
+.comment-btn:focus {
+    outline: none;
+}
+
+.comment-btn .fas {
+    transition: transform 0.2s ease-in-out;
+}
+
+.comment-btn .fas:hover {
+    transform: scale(1.2);
+}
+
+.comment-icon {
+    font-size: 18px;
+}
+
+.comment-count {
+    font-size: 18px;
 }
