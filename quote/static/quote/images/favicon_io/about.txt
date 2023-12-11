@@ -1,0 +1,6 @@
+This favicon was generated using the following font:
+
+- Font Title: Chenla
+- Font Author: http://scripts.sil.org/OFL
+- Font Source: http://fonts.gstatic.com/s/chenla/v25/SZc43FDpIKu8WZ9eXxfonUPL6Q.ttf
+- Font License: SIL Open Font License, 1.1 (http://scripts.sil.org/OFL))

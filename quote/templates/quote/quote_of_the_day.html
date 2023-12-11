@@ -1,0 +1,65 @@
+{% extends "quote/layout.html" %} 
+{% block body %}
+
+    <h2>Quote of the Day</h2>
+    <hr>
+
+    <!-- Display quote of the day -->
+    <div class="container">
+        <div class="row">
+            <div class="card">
+                <div class="card-body">
+
+                    <!-- User info -->
+                    <div class="d-flex align-items-center mb-3">
+
+                        <!-- Profile Picture -->
+                        {% if quote_of_the_day.user.userprofile.profile_picture %}
+                            <img class="rounded-circle" src="{{ quote_of_the_day.user.userprofile.profile_picture.url }}" alt="User Profile Picture" style="width: 40px; height: 40px;">
+                        {% else %}
+                            <img class="rounded-circle" src="#" alt="User Profile Picture" style="width: 40px; height: 40px;">
+                        {% endif %}
+                        <div class="d-flex align-items-center ml-2">
+                            <p class="text-muted small mr-2">Posted by <a href="{% url 'profile' quote_of_the_day.user.id %}">/{{ quote_of_the_day.user.username }}</a></p>
+                            <p class="text-muted small">{{ quote_of_the_day.timestamp|timesince }} ago</p>
+                        </div>
+
+                        <!-- Follow/Unfollow user (AJAX) -->
+                        {% if user != quote_of_the_day.user %}
+                            <div class="d-flex align-items-center position-absolute" style="right:0;">
+                                <p class="follow-count" id="follow-count-{{ quote_of_the_day.user.id }}" style="font-size: 0.8rem; margin-right: 10px; margin-top: 20px;">Followers: {{ quote_of_the_day.user.followers.count }}</p>
+                                {% if is_following %}
+                                    <button class="unfollow-button" id="unfollow-button-{{ quote_of_the_day.user.id }}" data-id="{{ quote_of_the_day.user.id }}">Unfollow</button>
+                                {% else %}
+                                    <button class="follow-button" id="follow-button-{{ quote_of_the_day.user.id }}" data-id="{{ quote_of_the_day.user.id }}">Follow</button>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Quote info -->
+                    <div class="media">
+                        <img class="mr-3" src="{{ quote_of_the_day.author.image.url }}" alt="Author Image" style="width: 150px; height: 150px; border-radius: 2px; object-fit: cover;">
+                        <div class="media-body">
+                            <blockquote>
+                                <p class="text-quote">"{{ quote_of_the_day.text }}"</p>
+                                <a href="{% url 'author' quote_of_the_day.author.id %}"><footer>- {{ quote_of_the_day.author.name }}</footer></a>
+                            </blockquote>
+                            <br>
+                            <p class="categories-text" style="font-size: 0.9em;">Categories:  
+                                {% for category in quote_of_the_day.categories.all|dictsort:"name" %}
+                                    <a href="{% url 'category' category.name %}">{{ category.name }}</a>{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+
+        <!-- Display all previous quotes of the day -->
+        
+    </div>
+
+{% endblock %}

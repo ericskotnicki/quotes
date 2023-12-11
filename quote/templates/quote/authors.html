@@ -1,0 +1,21 @@
+{% extends "quote/layout.html" %} 
+{% block body %}
+
+    <h2>Authors</h2>
+    <hr>
+
+    <div class="container">
+        {% if authors %}
+            <ul>
+                {% for author in authors %}
+                    <li>
+                        <a href="{% url 'author' author.id %}">{{ author.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No authors found.</p>
+        {% endif %}
+    </div>
+
+{% endblock %}
