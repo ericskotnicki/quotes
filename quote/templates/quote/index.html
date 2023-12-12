@@ -97,7 +97,7 @@
                         </div>
 
                         <!-- Comment display view -->
-                        <div class="comments-view" id="comments-view-{{quote.id}}" style="display: none">
+                        <div class="comments-view" id="comments-view-{{quote.id}}" style="display: none;">
                             {% if quote.comments.all %}
                                 {% for comment in quote.comments.all %}
                                     <div class="d-flex align-items-center">

@@ -39,7 +39,11 @@
 
                     <!-- Quote info -->
                     <div class="media">
-                        <img class="mr-3" src="{{ quote_of_the_day.author.image.url }}" alt="Author Image" style="width: 150px; height: 150px; border-radius: 2px; object-fit: cover;">
+                        {% if quote_of_the_day.author.image %} 
+                            <img class="mr-3" src="{{ quote_of_the_day.author.image.url }}" alt="Author Image" style="width: 150px; height: 150px; border-radius: 2px; object-fit: cover;">
+                        {% else %}
+                            <p>No image available</p>
+                        {% endif %}
                         <div class="media-body">
                             <blockquote>
                                 <p class="text-quote">"{{ quote_of_the_day.text }}"</p>
@@ -53,6 +57,56 @@
                             </p>
                         </div>
                     </div>
+
+                    <div class="d-flex align-items-center mb-3 position-relative"> 
+                        {% if user.is_authenticated %}
+                            <!-- Like Icon Font Awesome 5 - Heart (AJAX): fas fa-heart (heart is filled), far fa-heart (heart is void) -->
+                            <button style="text-decoration: none;" class="btn btn-link like-btn" id="like-btn-{{quote_of_the_day.id}}" data-id="{{quote_of_the_day.id}}">
+                                <i id="like-icon-{{quote_of_the_day.id}}" class="like-icon {% if quote_of_the_day.id in liked_quotes %}fas fa-heart{% else %}far fa-heart{% endif %}"></i>
+                                <span id="like-count-{{quote_of_the_day.id}}" class="like-count">{{ quote_of_the_day.likes.count }}</span>
+                            </button>
+                            <!-- Comment Icon Font Awesome 5 - Comment Bubble (AJAX) -->
+                            <button style="text-decoration: none;" class="btn btn-link comment-btn" id="comment-btn-{{quote_of_the_day.id}}" data-id="{{quote_of_the_day.id}}">
+                                <i id="comment-icon-{{quote_of_the_day.id}}" class="comment-icon {% if quote_of_the_day.id in commented_quotes %}fas fa-comment{% else %}far fa-comment{% endif %}"></i>
+                                <span id="comment-count-{{quote_of_the_day.id}}" class="comment-count">{{ quote_of_the_day.comments.count }}</span>
+                            </button>
+                            <!-- Bookmark Icon Font Awesome 5 (AJAX) -->
+                            <button style="text-decoration: none;" class="btn btn-link bookmark-btn" id="bookmark-btn-{{quote_of_the_day.id}}" data-id="{{quote_of_the_day.id}}">
+                                <i id="bookmark-icon-{{quote_of_the_day.id}}" class="bookmark-icon {% if quote_of_the_day.id in bookmarked_quotes %}fas fa-bookmark{% else %}far fa-bookmark{% endif %}"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+
+                        <!--  Hidden textarea and Post comment button view-->
+                        <div class="post-comment" id="post-comment-{{quote_of_the_day.id}}">
+
+                        </div>
+
+                        <!-- Comment display view -->
+                        <div class="comments-view" id="comments-view-{{quote_of_the_day.id}}" style="display: none;">
+                            {% if quote_of_the_day.comments.all %}
+                                {% for comment in quote_of_the_day.comments.all %}
+                                    <div class="d-flex align-items-center">
+                                        <!-- Profile Picture -->
+                                        {% if comment.user.userprofile.profile_picture %}
+                                            <img class="rounded-circle" src="{{ comment.user.userprofile.profile_picture.url }}" alt="User Profile Picture" style="width: 40px; height: 40px;">
+                                        {% else %}
+                                            <img class="rounded-circle" src="#" alt="User Profile Picture" style="width: 40px; height: 40px;">
+                                        {% endif %}
+                                        <!-- Username and timestamp -->
+                                        <div class="d-flex align-items-center ml-2">
+                                            <p class="text-muted small mr-2">Posted by <a href="{% url 'profile' comment.user.id %}">/{{ comment.user.username }}</a></p>
+                                            <p class="text-muted small">{{ comment.timestamp|timesince }} ago</p>
+                                        </div>
+                                    </div>
+                                    <!-- Comment text -->
+                                    <p class="comment-text" id="comment-text-{{quote_of_the_day.id}}">{{ comment.text }}</p>
+                                {% endfor %}
+                            {% else %}
+                                <p class="comment-text">No comments.</p>
+                            {% endif %}
+                        </div>
+
                 </div>
             </div>
         </div>

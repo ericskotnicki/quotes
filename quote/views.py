@@ -241,6 +241,16 @@ def profile(request, id):
         # Get the list of quotes liked but the current user
         liked_quotes = list(request.user.likes.values_list('quote_id', flat=True)) if request.user.is_authenticated else []
 
+        # Determine which users the current user is following
+        following_users = []
+        if request.user.is_authenticated:
+            following_users = Follow.objects.filter(follower=request.user).values_list('followed', flat=True)
+
+        # Get bookmarked quotes
+        bookmarked_quotes = []
+        if request.user.is_authenticated:
+            bookmarked_quotes = Bookmark.objects.filter(user=request.user).values_list('quote', flat=True)
+
         return render(request, "quote/profile.html", {
             'page_obj': page_obj,
             'userprofile': userprofile,
@@ -249,7 +259,9 @@ def profile(request, id):
             'like_count': like_count,
             'bookmark_count': bookmark_count,
             'is_following': is_following,
+            'following_users': following_users,
             'liked_quotes': liked_quotes,
+            'bookmarked_quotes': bookmarked_quotes,
         })
     
     except ObjectDoesNotExist:
@@ -363,14 +375,32 @@ def author(request, id):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    # infer the user that created the author info based on who posted the first quote
+    # Infer the user that created the author info based on who posted the first quote
     first_quote = Quote.objects.filter(author=author).order_by('timestamp').first()
     created_by = first_quote.user if first_quote else None
+
+    # Determine which users the current user is following
+    following_users = []
+    if request.user.is_authenticated:
+        following_users = Follow.objects.filter(follower=request.user).values_list('followed', flat=True)
+
+    # Determine if logged in user has liked the quote
+    liked_quotes = []
+    if request.user.is_authenticated:
+        liked_quotes = Like.objects.filter(user=request.user).values_list('quote', flat=True)
+
+    # Get bookmarked quotes
+    bookmarked_quotes = []
+    if request.user.is_authenticated:
+        bookmarked_quotes = Bookmark.objects.filter(user=request.user).values_list('quote', flat=True)
 
     return render(request, "quote/author.html", {
         'author': author,
         'page_obj': page_obj,
         'created_by': created_by,
+        'following_users': following_users,
+        'liked_quotes': liked_quotes,
+        'bookmarked_quotes': bookmarked_quotes,
     })
 
 
@@ -397,10 +427,22 @@ def category(request, name):
     # Get the list of quotes liked but the current user
     liked_quotes = list(request.user.likes.values_list('quote_id', flat=True)) if request.user.is_authenticated else []
 
+    # Determine which users the current user is following
+    following_users = []
+    if request.user.is_authenticated:
+        following_users = Follow.objects.filter(follower=request.user).values_list('followed', flat=True)
+
+    # Get bookmarked quotes
+    bookmarked_quotes = []
+    if request.user.is_authenticated:
+        bookmarked_quotes = Bookmark.objects.filter(user=request.user).values_list('quote', flat=True)
+
     return render(request, "quote/category.html", {
         'category': category,
         'page_obj': page_obj,
+        'following_users': following_users,
         'liked_quotes': liked_quotes,
+        'bookmarked_quotes': bookmarked_quotes,
     })
 
 
@@ -428,6 +470,14 @@ def following(request):
         # If this is a GET request, get all quotes from all followed users
         quotes = Quote.objects.filter(user__in=followed_users).order_by('-timestamp')
 
+    # Get the list of quotes liked but the current user
+    liked_quotes = list(request.user.likes.values_list('quote_id', flat=True)) if request.user.is_authenticated else []
+
+    # Get bookmarked quotes
+    bookmarked_quotes = []
+    if request.user.is_authenticated:
+        bookmarked_quotes = Bookmark.objects.filter(user=request.user).values_list('quote', flat=True)
+
     # Paginate
     paginator = Paginator(quotes, 10)
     page_number = request.GET.get('page')
@@ -441,6 +491,7 @@ def following(request):
         'following_users': following_users,
         'followed_users': followed_users,
         'liked_quotes': liked_quotes,
+        'bookmarked_quotes': bookmarked_quotes,
     })
 
 

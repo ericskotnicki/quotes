@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 textArea.name = 'content';
                 textArea.placeholder = 'Comment';
                 textArea.autofocus = true;
-                textArea.style.width = '90%';
+                textArea.style.width = '100%';
 
                 postBtn = document.createElement('button');
                 postBtn.classList.add('btn');
