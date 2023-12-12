@@ -61,32 +61,69 @@ document.addEventListener('DOMContentLoaded', function() {
                         'Content-Type': 'application/json'
                     }
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     console.log(data);
+                    // Remove the textarea and postBtn
                     textArea.remove();
                     postBtn.remove();
-            
+                
                     // Increase the comment count
                     const commentCount = document.getElementById(`comment-count-${quoteId}`);
                     commentCount.textContent = parseInt(commentCount.textContent) + 1;
-            
+                
+                    // Access the user's info and comment timestamp
+                    const username = data.user.username;
+                    const profilePicture = data.user.profile_picture;
+                    const commentText = data.comment.text;
+                    const commentTimestamp = data.comment.timestamp;
+                
                     // Create a new comment div
-                    const newComment = document.createElement('div');
-                    newComment.classList.add('comment-text');
-                    newComment.textContent = newCommentContent;
-            
+                    const newCommentDiv = document.createElement('div');
+                    newCommentDiv.classList.add('mb-3'); // Add bottom margin
+                
+                    // Create a div for the user info and profile picture
+                    const userInfoDiv = document.createElement('div');
+                    userInfoDiv.classList.add('d-flex', 'align-items-center');
+                    newCommentDiv.appendChild(userInfoDiv);
+                
+                    // Create and append the profile picture
+                    const profilePic = document.createElement('img');
+                    profilePic.classList.add('rounded-circle');
+                    profilePic.src = profilePicture ? profilePicture : '#';
+                    profilePic.alt = `${username}'s profile picture`;
+                    profilePic.style.width = '40px';
+                    profilePic.style.height = '40px';
+                    userInfoDiv.appendChild(profilePic);
+                
+                    // Create and append the username and timestamp
+                    const usernameP = document.createElement('p');
+                    usernameP.classList.add('text-muted', 'small', 'mr-2');
+                    usernameP.innerHTML = `Posted by <a href="/profile/${username}">/${username}</a>`;
+                    const timestampP = document.createElement('p');
+                    timestampP.classList.add('text-muted', 'small');
+                    timestampP.textContent = commentTimestamp;
+                    userInfoDiv.appendChild(usernameP);
+                    userInfoDiv.appendChild(timestampP);
+                
+                    // Create and append the comment text
+                    const commentP = document.createElement('p');
+                    commentP.classList.add('comment-text');
+                    commentP.textContent = commentText;
+                    newCommentDiv.appendChild(commentP);
+                
                     // Append the new comment to the comments view
-                    commentsView.appendChild(newComment);
-            
-                    // Display user information
-                    const userInfo = document.createElement('div');
-                    userInfo.textContent = `Posted by ${data.user.username} ${data.timestamp} ago`;
-                    newComment.appendChild(userInfo);
+                    const commentsView = document.getElementById(`comments-view-${quoteId}`);
+                    commentsView.insertBefore(newCommentDiv, commentsView.firstChild);
                 })
                 .catch((error) => {
-                    console.error('Error:', error);
-                })
+                    console.error('There was a problem with the fetch operation.', error);
+                });
             });
         });
     }); 

@@ -11,6 +11,8 @@ from django.db import IntegrityError, models
 from django.core.files.images import ImageFile
 from django.contrib.auth.forms import PasswordChangeForm
 from django.core import serializers
+from django.utils.timesince import timesince
+from django.utils import timezone
 import json
 import pycountry
 
@@ -605,5 +607,21 @@ def comment(request, id):
         # Create comment object and save
         comment, created = Comment.objects.get_or_create(text=comment_text, user=user, quote=quote)
 
+        # Format the timestamp
+        formatted_timestamp = timesince(comment.timestamp, timezone.now()) + ' ago'
+
+        # Data passed to comment.js fetch
+        data = {
+            'user': {
+                'username': user.username,
+                'profile_picture': str(user.userprofile.profile_picture.url) if user.userprofile.profile_picture else None,
+            },
+            'comment': {
+                'text': comment.text,
+                'timestamp': formatted_timestamp,
+            },
+            'message': 'Quote updated successfully.'
+        }
+
         # Send success message to client
-        return JsonResponse({"message": "Quote updated successfully."}, status=200)
+        return JsonResponse(data, status=200)
