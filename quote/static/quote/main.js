@@ -4,14 +4,14 @@
 
 --> Ideas for JavaScript Enhancements
 
-1. Dynamic Loading of Quotes: Instead of loading all quotes at once, you could use JavaScript to load them dynamically as the user scrolls down the page. This is often called "infinite scrolling" and can improve performance and user experience.
-2. Form Validation: You can use JavaScript to validate form inputs on the client side before they're submitted to the server. This can provide immediate feedback to the user and reduce server load.
+1. Dynamic Loading of Quotes: Instead of loading all quotes at once, use JavaScript to load them dynamically as the user scrolls down the page. This is often called "infinite scrolling" and can improve performance and user experience.
+2. Form Validation: Use JavaScript to validate form inputs on the client side before they're submitted to the server. This can provide immediate feedback to the user and reduce server load.
 3. Interactive Search: JavaScript can be used to implement a search feature that displays results as the user types, improving usability.
-4. Quote Rating or Liking System: If you plan to implement a system for users to rate or like quotes, JavaScript can be used to submit these ratings or likes without requiring a page reload.
+4. (DONE) Quote Rating or Liking System: If you plan to implement a system for users to rate or like quotes, JavaScript can be used to submit these ratings or likes without requiring a page reload.
 5. User Profile Interactions: JavaScript can be used to enhance interactions on user profile pages. For example, you could use JavaScript to allow users to follow or unfollow other users without a page reload.
 6. Animations and Transitions: JavaScript can be used to add animations and transitions to improve the visual appeal of your website.
-7. AJAX: AJAX stands for Asynchronous JavaScript and XML. It's a technique that allows web pages to be updated asynchronously by exchanging data with a web server behind the scenes. This means that it's possible to update parts of a web page, without reloading the whole page.
-8. Editing Quotes: You could use JavaScript to allow users to edit quotes without a page reload. This would involve using AJAX to submit the edited quote to the server and then updating the quote on the page with the new text.
+7. (DONE) AJAX: AJAX stands for Asynchronous JavaScript and XML. It's a technique that allows web pages to be updated asynchronously by exchanging data with a web server behind the scenes. This means that it's possible to update parts of a web page, without reloading the whole page.
+8. (DONE) Editing Quotes: You could use JavaScript to allow users to edit quotes without a page reload. This would involve using AJAX to submit the edited quote to the server and then updating the quote on the page with the new text.
 */
 
 

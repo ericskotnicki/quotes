@@ -21,7 +21,6 @@
                 <p>No profile picture.</p>
             {% endif %}
             <br>
-
             <!-- Follow/Unfollow user -->
             {% if user != userprofile and user.is_authenticated %}
                 <div class="d-flex align-items-center">
@@ -35,209 +34,206 @@
                     </div>
                 </div>
             {% endif %}
-            
         </div>
         <hr>
 
-        <!-- Profile Links -->
-        <div class="profile-links-view" id="profile-links-view">
-            <a href="#" class="overview-link" id="overview-link">Overview</a>
-            <a href="#" class="posts-link" id="posts-link">Posts</a>
-            <a href="#" class="comments-link" id="comments-link">Comments</a>
-            <a href="#" class="bookmarked-link" id="bookmarked-link">Bookmarked</a>
-            <a href="#" class="liked-link" id="liked-link">Liked</a>
-            <a href="#" class="history-link" id="history-link">History</a>
+        <!-- Profile Views - refer to JavaScript controlling view display '/quote/static//quote/profile.js' -->
+
+        <!-- The view buttons -->
+        <div class="button-container">
+            <button class="view-button" data-view="overview-view">Overview</button>
+            <button class="view-button" data-view="posts-view">Posts</button>
+            <button class="view-button" data-view="comments-view">Comments</button>
+            <button class="view-button" data-view="saved-view">Saved</button>
+            <button class="view-button" data-view="liked-view">Liked</button>
+            <button class="view-button" data-view="history-view">History</button>
         </div>
 
-        <!-- Profile Views - refer to JavaScript controlling view display '/quote/static//quote/profile.js' -->
-        <div class="profile-view" id="profile-view" data-id="{{ userprofile.id }}">
 
-            <!-- Overview -->
-            <div class="overview-view" id="overview-view">
-                <!-- User info -->
-                {% if user == userprofile %}
-                    <table class="user-info-table">
-                        <tr><td><strong>Username:</strong></td><td style="padding-left: 20px;">{{ userprofile.username }}</td></tr>
-                        <tr><td><strong>Email:</strong></td><td style="padding-left: 20px;">{{ userprofile.email }}</td></tr>
-                        <tr><td><strong>Date Joined:</strong></td><td style="padding-left: 20px;">{{ userprofile.date_joined|date:"F d, Y" }}</td></tr>
-                        <tr><td><strong>Country:</strong></td><td style="padding-left: 20px;">{{ userprofile.userprofile.country_of_origin }}</td></tr>
-                        <tr><td><strong>Birthday:</strong></td><td style="padding-left: 20px;">{{ userprofile.userprofile.birthday }}</td></tr>
-                        <tr><td><strong>Followers:</strong></td><td style="padding-left: 20px;">{{ userprofile.followers.count }}</td></tr>
-                        <tr><td><strong>Following:</strong></td><td style="padding-left: 20px;">{{ userprofile.following.count }}</td></tr>
-                        <tr><td><strong>Quotes:</strong></td><td style="padding-left: 20px;">{{ quote_count }}</td></tr>
-                        <tr><td><strong>Comments:</strong></td><td style="padding-left: 20px;">{{ comment_count }}</td></tr>
-                        <tr><td><strong>Likes:</strong></td><td style="padding-left: 20px;">{{ like_count }}</td></tr>
-                        <tr><td><strong>Bookmarks:</strong></td><td style="padding-left: 20px;">{{ bookmark_count }}</td></tr>
-                    </table>
-                {% endif %}
-            </div>
+        <!-- VIEWS -------------------------------------------------------  -->
+       
+        <!-- Overview -->
+        <div id="overview-view" class="view">
+            <table class="user-info-table">
+                <tr><td><strong>Username:</strong></td><td style="padding-left: 20px;">{{ userprofile.username }}</td></tr>
+                <tr><td><strong>Email:</strong></td><td style="padding-left: 20px;">{{ userprofile.email }}</td></tr>
+                <tr><td><strong>Date Joined:</strong></td><td style="padding-left: 20px;">{{ userprofile.date_joined|date:"F d, Y" }}</td></tr>
+                <tr><td><strong>Country:</strong></td><td style="padding-left: 20px;">{{ userprofile.userprofile.country_of_origin }}</td></tr>
+                <tr><td><strong>Birthday:</strong></td><td style="padding-left: 20px;">{{ userprofile.userprofile.birthday }}</td></tr>
+                <tr><td><strong>Followers:</strong></td><td style="padding-left: 20px;">{{ userprofile.followers.count }}</td></tr>
+                <tr><td><strong>Following:</strong></td><td style="padding-left: 20px;">{{ userprofile.following.count }}</td></tr>
+                <tr><td><strong>Quotes:</strong></td><td style="padding-left: 20px;">{{ quote_count }}</td></tr>
+                <tr><td><strong>Comments:</strong></td><td style="padding-left: 20px;">{{ comment_count }}</td></tr>
+                <tr><td><strong>Likes:</strong></td><td style="padding-left: 20px;">{{ like_count }}</td></tr>
+                <tr><td><strong>Bookmarks:</strong></td><td style="padding-left: 20px;">{{ bookmark_count }}</td></tr>
+            </table>
+        </div>
 
-            <!-- Comments -->
-            <div class="comments-view" id="comments-view">
-
-            </div>
-
-            <!-- Saved -->
-            <div class="saved-view" id="saved-view">
-
-            </div>
-
-            <!-- Liked -->
-            <div class="liked-view" id="liked-view">
-
-            </div>
-
-            <!-- History -->
-            <div class="history-view" id="history-view">
-
-            </div>
-
-            <!-- Posts -->
-            <div class="posts-view" id="posts-view">
-                {% if page_obj %}
-                    {% for quote in page_obj %}
-                        <div class="row">
-                            <div class="card">
-                                <div class="card-body">
-                                    <!-- User info -->
-                                    <div class="d-flex align-items-center mb-3 position-relative">
-                                        <!-- Profile Picture -->
-                                        {% if quote.user.userprofile.profile_picture %}
-                                            <img class="rounded-circle" src="{{ quote.user.userprofile.profile_picture.url }}" alt="User Profile Picture" style="width: 40px; height: 40px;">
-                                        {% else %}
-                                            <img class="rounded-circle" src="#" alt="User Profile Picture" style="width: 40px; height: 40px;">
-                                        {% endif %}
-                                        <!-- Username and timestamp -->
-                                        <div class="d-flex align-items-center ml-2">
-                                            <p class="text-muted small mr-2">Posted by <a href="{% url 'profile' quote.user.id %}">/{{ quote.user.username }}</a></p>
-                                            <p class="text-muted small">{{ quote.timestamp|timesince }} ago</p>
+        <!-- Posts -->
+        <div id="posts-view" class="view">
+            {% if page_obj %}
+                {% for quote in page_obj %}
+                    <div class="row">
+                        <div class="card">
+                            <div class="card-body">
+                                <!-- User info -->
+                                <div class="d-flex align-items-center mb-3 position-relative">
+                                    <!-- Profile Picture -->
+                                    {% if quote.user.userprofile.profile_picture %}
+                                        <img class="rounded-circle" src="{{ quote.user.userprofile.profile_picture.url }}" alt="User Profile Picture" style="width: 40px; height: 40px;">
+                                    {% else %}
+                                        <img class="rounded-circle" src="#" alt="User Profile Picture" style="width: 40px; height: 40px;">
+                                    {% endif %}
+                                    <!-- Username and timestamp -->
+                                    <div class="d-flex align-items-center ml-2">
+                                        <p class="text-muted small mr-2">Posted by <a href="{% url 'profile' quote.user.id %}">/{{ quote.user.username }}</a></p>
+                                        <p class="text-muted small">{{ quote.timestamp|timesince }} ago</p>
+                                    </div>
+                                    <!-- Follow/Unfollow user (AJAX)-->
+                                    {% if user != quote.user and user.is_authenticated %}
+                                        <div class="d-flex align-items-center position-absolute" style="right:0;">
+                                            <p class="follow-count" id="follow-count-{{ quote.user.id }}" style="font-size: 0.8rem; margin-right: 10px; margin-top: 20px;">Followers: {{ quote.user.followers.count }}</p>
+                                            {% if quote.user.id in following_users %}
+                                                <button class="unfollow-button" id="unfollow-button-{{ quote.user.id }}" data-id="{{ quote.user.id }}">Unfollow</button>
+                                            {% else %}
+                                                <button class="follow-button" id="follow-button-{{ quote.user.id }}" data-id="{{ quote.user.id }}">Follow</button>
+                                            {% endif %}
                                         </div>
-                                        <!-- Follow/Unfollow user (AJAX)-->
-                                        {% if user != quote.user and user.is_authenticated %}
-                                            <div class="d-flex align-items-center position-absolute" style="right:0;">
-                                                <p class="follow-count" id="follow-count-{{ quote.user.id }}" style="font-size: 0.8rem; margin-right: 10px; margin-top: 20px;">Followers: {{ quote.user.followers.count }}</p>
-                                                {% if quote.user.id in following_users %}
-                                                    <button class="unfollow-button" id="unfollow-button-{{ quote.user.id }}" data-id="{{ quote.user.id }}">Unfollow</button>
-                                                {% else %}
-                                                    <button class="follow-button" id="follow-button-{{ quote.user.id }}" data-id="{{ quote.user.id }}">Follow</button>
-                                                {% endif %}
-                                            </div>
-                                        {% endif %}
-                                    </div>
+                                    {% endif %}
+                                </div>
 
-                                    <!-- Quote info -->
-                                    <div class="media">
-                                        {% if quote.author.image %} 
-                                            <img class="mr-3" src="{{ quote.author.image.url }}" alt="Author Image" style="width: 150px; height: 150px; border-radius: 2px; object-fit: cover;">
-                                        {% else %}
-                                            <p>No image available</p>
-                                        {% endif %}
-                                        <div class="media-body">
-                                            <blockquote>
-                                                <p class="text-quote" id="quote-content-{{quote.id}}">"{{ quote.text }}"</p>
-                                                <!-- Edit link -->
-                                                {% if user.is_authenticated and user == quote.user %}
-                                                    <a href="#" class="edit-link" id="edit-link-{{quote.id}}" data-id="{{quote.id}}">Edit</a>
-                                                {% endif %}
-                                                <a href="{% url 'author' quote.author.id %}"><footer>- {{ quote.author.name }}</footer></a>
-                                            </blockquote>
-                                            <br>
-                                            <p class="categories-text" style="font-size: 0.9em;">Categories:  
-                                                {% for category in quote.categories.all|dictsort:"name" %}
-                                                    <a href="{% url 'category' category.name %}">{{ category.name }}</a>{% if not forloop.last %}, {% endif %}
-                                                {% endfor %}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex align-items-center mb-3 position-relative"> 
-                                        {% if user.is_authenticated %}
-                                            <!-- Like Icon Font Awesome 5 - Heart (AJAX): fas fa-heart (heart is filled), far fa-heart (heart is void) -->
-                                            <button style="text-decoration: none;" class="btn btn-link like-btn" id="like-btn-{{quote.id}}" data-id="{{quote.id}}">
-                                                <i id="like-icon-{{quote.id}}" class="like-icon {% if quote.id in liked_quotes %}fas fa-heart{% else %}far fa-heart{% endif %}"></i>
-                                                <span id="like-count-{{quote.id}}" class="like-count">{{ quote.likes.count }}</span>
-                                            </button>
-                                            <!-- Comment Icon Font Awesome 5 - Comment Bubble (AJAX) -->
-                                            <button style="text-decoration: none;" class="btn btn-link comment-btn" id="comment-btn-{{quote.id}}" data-id="{{quote.id}}">
-                                                <i id="comment-icon-{{quote.id}}" class="comment-icon {% if quote.id in commented_quotes %}fas fa-comment{% else %}far fa-comment{% endif %}"></i>
-                                                <span id="comment-count-{{quote.id}}" class="comment-count">{{ quote.comments.count }}</span>
-                                            </button>
-                                            <!-- Bookmark Icon Font Awesome 5 (AJAX) -->
-                                            <button style="text-decoration: none;" class="btn btn-link bookmark-btn" id="bookmark-btn-{{quote.id}}" data-id="{{quote.id}}">
-                                                <i id="bookmark-icon-{{quote.id}}" class="bookmark-icon {% if quote.id in bookmarked_quotes %}fas fa-bookmark{% else %}far fa-bookmark{% endif %}"></i>
-                                            </button>
-                                        {% endif %}
-                                    </div>
-
-                                    <!--  Hidden textarea and Post comment button view-->
-                                    <div class="post-comment" id="post-comment-{{quote.id}}">
-
-                                    </div>
-
-                                    <!-- Comment display view -->
-                                    <div class="comments-view" id="comments-view-{{quote.id}}" style="display: none;">
-                                        {% if quote.comments.all %}
-                                            {% for comment in quote.comments.all %}
-                                                <div class="d-flex align-items-center">
-                                                    <!-- Profile Picture -->
-                                                    {% if comment.user.userprofile.profile_picture %}
-                                                        <img class="rounded-circle" src="{{ comment.user.userprofile.profile_picture.url }}" alt="User Profile Picture" style="width: 40px; height: 40px;">
-                                                    {% else %}
-                                                        <img class="rounded-circle" src="#" alt="User Profile Picture" style="width: 40px; height: 40px;">
-                                                    {% endif %}
-                                                    <!-- Username and timestamp -->
-                                                    <div class="d-flex align-items-center ml-2">
-                                                        <p class="text-muted small mr-2">Posted by <a href="{% url 'profile' comment.user.id %}">/{{ comment.user.username }}</a></p>
-                                                        <p class="text-muted small">{{ comment.timestamp|timesince }} ago</p>
-                                                    </div>
-                                                </div>
-                                                <!-- Comment text -->
-                                                <p class="comment-text" id="comment-text-{{quote.id}}">{{ comment.text }}</p>
+                                <!-- Quote info -->
+                                <div class="media">
+                                    {% if quote.author.image %} 
+                                        <img class="mr-3" src="{{ quote.author.image.url }}" alt="Author Image" style="width: 150px; height: 150px; border-radius: 2px; object-fit: cover;">
+                                    {% else %}
+                                        <p>No image available</p>
+                                    {% endif %}
+                                    <div class="media-body">
+                                        <blockquote>
+                                            <p class="text-quote" id="quote-content-{{quote.id}}">"{{ quote.text }}"</p>
+                                            <!-- Edit link -->
+                                            {% if user.is_authenticated and user == quote.user %}
+                                                <a href="#" class="edit-link" id="edit-link-{{quote.id}}" data-id="{{quote.id}}">Edit</a>
+                                            {% endif %}
+                                            <a href="{% url 'author' quote.author.id %}"><footer>- {{ quote.author.name }}</footer></a>
+                                        </blockquote>
+                                        <br>
+                                        <p class="categories-text" style="font-size: 0.9em;">Categories:  
+                                            {% for category in quote.categories.all|dictsort:"name" %}
+                                                <a href="{% url 'category' category.name %}">{{ category.name }}</a>{% if not forloop.last %}, {% endif %}
                                             {% endfor %}
-                                        {% else %}
-                                            <p class="comment-text">No comments.</p>
-                                        {% endif %}
+                                        </p>
                                     </div>
+                                </div>
+
+                                <div class="d-flex align-items-center mb-3 position-relative"> 
+                                    {% if user.is_authenticated %}
+                                        <!-- Like Icon Font Awesome 5 - Heart (AJAX): fas fa-heart (heart is filled), far fa-heart (heart is void) -->
+                                        <button style="text-decoration: none;" class="btn btn-link like-btn" id="like-btn-{{quote.id}}" data-id="{{quote.id}}">
+                                            <i id="like-icon-{{quote.id}}" class="like-icon {% if quote.id in liked_quotes %}fas fa-heart{% else %}far fa-heart{% endif %}"></i>
+                                            <span id="like-count-{{quote.id}}" class="like-count">{{ quote.likes.count }}</span>
+                                        </button>
+                                        <!-- Comment Icon Font Awesome 5 - Comment Bubble (AJAX) -->
+                                        <button style="text-decoration: none;" class="btn btn-link comment-btn" id="comment-btn-{{quote.id}}" data-id="{{quote.id}}">
+                                            <i id="comment-icon-{{quote.id}}" class="comment-icon {% if quote.id in commented_quotes %}fas fa-comment{% else %}far fa-comment{% endif %}"></i>
+                                            <span id="comment-count-{{quote.id}}" class="comment-count">{{ quote.comments.count }}</span>
+                                        </button>
+                                        <!-- Bookmark Icon Font Awesome 5 (AJAX) -->
+                                        <button style="text-decoration: none;" class="btn btn-link bookmark-btn" id="bookmark-btn-{{quote.id}}" data-id="{{quote.id}}">
+                                            <i id="bookmark-icon-{{quote.id}}" class="bookmark-icon {% if quote.id in bookmarked_quotes %}fas fa-bookmark{% else %}far fa-bookmark{% endif %}"></i>
+                                        </button>
+                                    {% endif %}
+                                </div>
+
+                                <!--  Hidden textarea and Post comment button view-->
+                                <div class="post-comment" id="post-comment-{{quote.id}}">
 
                                 </div>
+
+                                <!-- Comment display view -->
+                                <div class="comments-view" id="comments-view-{{quote.id}}" style="display: none;">
+                                    {% if quote.comments.all %}
+                                        {% for comment in quote.comments.all %}
+                                            <div class="d-flex align-items-center">
+                                                <!-- Profile Picture -->
+                                                {% if comment.user.userprofile.profile_picture %}
+                                                    <img class="rounded-circle" src="{{ comment.user.userprofile.profile_picture.url }}" alt="User Profile Picture" style="width: 40px; height: 40px;">
+                                                {% else %}
+                                                    <img class="rounded-circle" src="#" alt="User Profile Picture" style="width: 40px; height: 40px;">
+                                                {% endif %}
+                                                <!-- Username and timestamp -->
+                                                <div class="d-flex align-items-center ml-2">
+                                                    <p class="text-muted small mr-2">Posted by <a href="{% url 'profile' comment.user.id %}">/{{ comment.user.username }}</a></p>
+                                                    <p class="text-muted small">{{ comment.timestamp|timesince }} ago</p>
+                                                </div>
+                                            </div>
+                                            <!-- Comment text -->
+                                            <p class="comment-text" id="comment-text-{{quote.id}}">{{ comment.text }}</p>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="comment-text">No comments.</p>
+                                    {% endif %}
+                                </div>
+
                             </div>
                         </div>
-                        <hr>
-                    {% endfor %} 
-
-                        <!-- Pagination (Bootstrap template) -->
-                        <nav aria-label="Page navigation example">
-                            <ul class="pagination justify-content-center">
-                                <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
-                                    {% if page_obj.has_previous %}
-                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1" aria-disabled="true">Previous</a>
-                                    {% else %}
-                                        <span class="page-link">Previous</span>
-                                    {% endif %}
-                                </li>
-                                {% for page_num in page_obj.paginator.page_range %}
-                                    {% if page_obj.number == page_num %}
-                                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
-                                    {% elif page_num > page_obj.number|add:'-3' and page_num < page_obj.number|add:'3' %}
-                                        <li class="page-item"><a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a></li>
-                                    {% endif %}
-                                {% endfor %}
-                                <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
-                                    {% if page_obj.has_next %}
-                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
-                                    {% else %}
-                                        <span class="page-link">Next</span>
-                                    {% endif %}
-                                </li>
-                            </ul>
-                        </nav>
                     </div>
-                {% else %}
-                    <p>No posts.</p>
-                {% endif %}
-            </div>
+                    <hr>
+                {% endfor %} 
+
+                    <!-- Pagination (Bootstrap template) -->
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                                {% if page_obj.has_previous %}
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1" aria-disabled="true">Previous</a>
+                                {% else %}
+                                    <span class="page-link">Previous</span>
+                                {% endif %}
+                            </li>
+                            {% for page_num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == page_num %}
+                                    <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                                {% elif page_num > page_obj.number|add:'-3' and page_num < page_obj.number|add:'3' %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                                {% if page_obj.has_next %}
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                                {% else %}
+                                    <span class="page-link">Next</span>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            {% else %}
+                <p>No posts.</p>
+            {% endif %}
+        </div>
+
+        <!-- Comments -->
+        <div id="comments-view" class="view">
 
         </div>
+
+        <!-- Bookmarked -->
+        <div id="bookmarked-view" class="view">
+
+        </div>
+
+        <!-- Liked -->
+        <div id="liked-view" class="view">
+
+        </div>
+
+        <!-- History -->
+        <div id="history-view" class="view">
+
+        </div>
+
     </div>
 
 {% endblock %}
