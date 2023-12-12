@@ -64,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             console.log('Created textarea & save button. Waiting for save button event listener click');
 
-
             // Add a click event listener to the save button
             saveBtn.addEventListener('click', function() {
                 // Update the quote content and show it

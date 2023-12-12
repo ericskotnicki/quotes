@@ -35,6 +35,7 @@ def index(request):
     if request.user.is_authenticated:
         liked_quotes = Like.objects.filter(user=request.user).values_list('quote', flat=True)
 
+    # Get bookmarked quotes
     bookmarked_quotes = []
     if request.user.is_authenticated:
         bookmarked_quotes = Bookmark.objects.filter(user=request.user).values_list('quote', flat=True)
@@ -590,4 +591,19 @@ def bookmark(request, id):
 @csrf_exempt
 @login_required
 def comment(request, id):
-    pass
+    if request.method == 'POST':
+        user = request.user
+        data = json.loads(request.body)
+        # Check if content exists from client
+        if 'content' not in data:
+            return JsonResponse({"error": "Missing content in request."}, status=400)
+        comment_text = data['content']
+        quote_id = data['id']
+
+        quote = Quote.objects.get(pk=quote_id)
+
+        # Create comment object and save
+        comment, created = Comment.objects.get_or_create(text=comment_text, user=user, quote=quote)
+
+        # Send success message to client
+        return JsonResponse({"message": "Quote updated successfully."}, status=200)
